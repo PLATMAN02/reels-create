@@ -85,7 +85,7 @@ location first because the original script replaces its own `_selftest` director
 
 ## 1. Intake (ONE message, defaults filled in)
 Ask only what's unknown, all at once: topic (or "you pick 3 ideas"), a link to a short whose format they like (optional),
-length (default ~30 s), voice (`SKILL/scripts/py SKILL/scripts/voice.py --list`; default `am_michael`), voiceover mode:
+length (default ~30 s), voice (`SKILL/scripts/py SKILL/scripts/voice.py --list`; offer the user's favourites first: `af_heart`, `am_puck`, `af_bella`, `bf_isabella`; default `af_heart`, or `am_puck` for playful topics), voiceover mode:
 **AI voice** (default) · **their own recording** (they record after seeing the script; `words.py --audio`) ·
 **captions-only** (no voice yet; `estimate.py`), music (built-in bed · none · their own royalty-free file), their
 handle for the follow card (optional; without it the card says "FOLLOW FOR MORE"). The follow CTA is always included unless they say no.

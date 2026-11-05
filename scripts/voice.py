@@ -24,10 +24,16 @@ FILES = {
     'voices-v1.0.bin': 'https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin',
 }
 GOOD = {
-    'am_michael': 'US male, steady explainer (default)', 'am_puck': 'US male, lively, playful', 'am_fenrir': 'US male, deeper',
-    'am_onyx': 'US male, low', 'af_heart': 'US female, warm (best overall)', 'af_bella': 'US female, bright',
-    'af_nicole': 'US female, soft and close', 'bm_george': 'UK male, documentary', 'bm_fable': 'UK male, storyteller',
-    'bf_emma': 'UK female, calm',
+    # the user's favourites first
+    'af_heart': 'US female, warm (favourite, best overall)', 'am_puck': 'US male, lively, playful (favourite)',
+    'af_bella': 'US female, bright (favourite)', 'bf_isabella': 'UK female, smooth (favourite)',
+    # the rest of the English voices
+    'am_michael': 'US male, steady explainer', 'am_fenrir': 'US male, deeper', 'am_onyx': 'US male, low',
+    'am_adam': 'US male', 'am_echo': 'US male', 'am_eric': 'US male', 'am_liam': 'US male', 'am_santa': 'US male, character',
+    'af_nicole': 'US female, soft and close', 'af_alloy': 'US female', 'af_aoede': 'US female', 'af_jessica': 'US female',
+    'af_kore': 'US female', 'af_nova': 'US female', 'af_river': 'US female', 'af_sarah': 'US female', 'af_sky': 'US female',
+    'bm_george': 'UK male, documentary', 'bm_fable': 'UK male, storyteller', 'bm_daniel': 'UK male', 'bm_lewis': 'UK male',
+    'bf_emma': 'UK female, calm', 'bf_alice': 'UK female', 'bf_lily': 'UK female',
 }
 SR = 24000
 
@@ -74,7 +80,7 @@ def main():
     if not a.project: ap.error('project folder missing')
     from kokoro_onnx import Kokoro
     P = Path(a.project); S = json.loads((P / 'script.json').read_text())
-    voice = a.voice or S.get('voice', 'am_michael'); speed = a.speed or S.get('speed', 1.0)
+    voice = a.voice or S.get('voice', 'af_heart'); speed = a.speed or S.get('speed', 1.0)
     k = Kokoro(str(KDIR / 'kokoro-v1.0.onnx'), str(KDIR / 'voices-v1.0.bin'))
     lang = 'en-gb' if voice.startswith('b') else 'en-us'
     say = lambda text: trim(np.asarray(k.create(text, voice=voice, speed=speed, lang=lang)[0], dtype=np.float64))

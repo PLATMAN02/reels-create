@@ -112,6 +112,47 @@ FX = dict(ding=ding, chirp=chirp, chug=chug, stamp=stampit, inhale=inhale, heart
 LEVEL = dict(ding=-17, chirp=-19, chug=-20, stamp=-12, inhale=-15, heartbeat=-8, whoosh=-17, slide=-19, pop=-14, plop=-15, gulp=-11, boing=-15, bubbles=-21, sizzle=-18, sparkle=-17,
              thud=-11, slam=-9, tock=-18, zip=-14, alarm=-17)
 
+# ---- medieval kit (bow vs crossbow) ----
+def twang(**_):
+    d = 0.5; t = tt(d); f = 110 * (1 + 0.04 * np.exp(-t * 30))
+    x = (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(4 * np.pi * f * t) + 0.25 * np.sin(6 * np.pi * f * t)) * env(len(t), 0.001, 7)
+    return lp(x + bp(noise(d), 300, 2500) * env(len(t), 0.001, 30) * 0.4, 2600) * 0.8
+def click(**_):
+    d = 0.05; t = tt(d); return (bp(noise(d), 1200, 4000) * env(len(t), 0.0005, 40) + np.sin(2 * np.pi * 900 * t) * env(len(t), 0.0005, 50) * 0.4) * 0.6
+def rain(d=6.0, **_):
+    n = lp(hp(noise(d), 500), 6000); n2 = lp(noise(d), 300) * 0.5
+    drops = (rng.random(len(n)) < 0.0015).astype(float); drops = bp(drops, 1500, 5000) * 6
+    e = np.minimum(1, np.linspace(0, d / 0.8, len(n))) * np.minimum(1, np.linspace(d / 1.0, 0, len(n)))
+    x = (n * 0.5 + n2 + drops) * e; return x / (np.abs(x).max() + 1e-9) * 0.6
+def thunder(**_):
+    d = 2.4; t = tt(d); n = lp(noise(d), 160) * 3 + lp(noise(d), 600) * np.exp(-t * 6)
+    e = np.minimum(1, t / 0.03) * np.exp(-t * 1.4) * (1 + 0.5 * np.sin(2 * np.pi * 3 * t)); x = n * e; return np.tanh(x / (np.abs(x).max() + 1e-9) * 1.5) * 0.9
+def caw(**_):
+    out = []
+    for k in range(2):
+        d = 0.16; t = tt(d); f = 520 - 120 * t / d; x = np.sign(np.sin(2 * np.pi * np.cumsum(np.full(len(t), f)) / SR)) * 0.4 + bp(noise(d), 500, 1600)
+        out += [lp(x, 1800) * env(len(t), 0.01, 5), np.zeros(int(0.07 * SR))]
+    return np.concatenate(out) * 0.7
+def cheer(d=1.5, **_):
+    x = np.zeros(int(d * SR))
+    for _ in range(int(d * 14)):
+        st = rng.integers(0, max(1, len(x) - int(0.3 * SR))); dd = rng.uniform(0.15, 0.3); f0 = rng.uniform(180, 320); tt_ = tt(dd)
+        v = np.sin(2 * np.pi * np.cumsum(f0 * (1 + 0.25 * np.sin(2 * np.pi * rng.uniform(4, 8) * tt_))) / SR); v = v + 0.5 * np.sign(v) * 0.3
+        x[st:st + len(v)] += lp(v * env(len(v), 0.02, 4), 1800)[: len(x) - st] * rng.uniform(0.2, 0.5)
+    x += bp(noise(d), 300, 2000) * 0.25; e = np.minimum(1, np.linspace(0, d / 0.15, len(x))) * np.minimum(1, np.linspace(d / 0.3, 0, len(x))); return x * e * 0.6
+def scribble(d=1.5, **_):
+    x = np.zeros(int(d * SR))
+    for st in np.arange(0, d - 0.1, 0.085):
+        i = int(st * SR); dd = rng.uniform(0.04, 0.08); s = bp(noise(dd), 2000, 6000) * env(int(dd * SR), 0.005, 4); x[i:i + len(s)] += s[: len(x) - i] * rng.uniform(0.4, 1)
+    return x * 0.5
+def bang(**_):
+    d = 1.2; t = tt(d); x = lp(noise(d), 2500) * np.exp(-t * 9) + lp(noise(d), 200) * np.exp(-t * 3) * 1.5 + np.sin(2 * np.pi * 55 * t) * np.exp(-t * 10)
+    return np.tanh(x * 2) * 0.9
+def drip(**_):
+    d = 0.12; return lp(sweep(900, 1500, d) * env(int(d * SR), 0.002, 9), 3000) * 0.5
+FX.update(twang=twang, click=click, rain=rain, thunder=thunder, caw=caw, cheer=cheer, scribble=scribble, bang=bang, drip=drip)
+LEVEL.update(twang=-14, click=-22, rain=-25, thunder=-12, caw=-19, cheer=-21, scribble=-20, bang=-9, drip=-22)
+
 
 # ---------- the music bed: soft pad + plucked arpeggio, 100 BPM, I–vi–IV–V ----------
 def music_bed():
@@ -196,9 +237,15 @@ if mus and mus != 'none':
     if voice is not None:                                                        # duck under the voice
         lev = np.abs(voice.mean(1)); lev = signal.lfilter([1 - 0.9995], [1, -0.9995], lev); lev /= lev.max() + 1e-9
         m *= (1 - 0.55 * np.clip(lev * 3, 0, 1))[:, None]
+    for c in cj['cues']:                                                         # 'hush': near-silence before the biggest hit
+        if c['type'] != 'hush': continue
+        a, b = int(c['t'] * SR), int((c['t'] + c.get('dur', 0.6)) * SR); n = max(1, b - a); w = np.ones(N)
+        ramp = min(int(0.08 * SR), n // 3); w[a:b] = 0.12; w[a:a + ramp] = np.linspace(1, 0.12, ramp); w[b - ramp:b] = np.linspace(0.12, 1, ramp)
+        m *= w[:, None]
     mix += m
 # effects
 for c in cj['cues']:
+    if c['type'] == 'hush': continue
     fn = FX.get(c['type'])
     if not fn: print('unknown cue type, skipped:', c['type']); continue
     x = fn(**({'d': c['dur']} if c.get('dur') else {}))

@@ -36,8 +36,9 @@ export function buildShots(E) {
   const shoot = (scene, people, from, to, at, at2, k, look, focus) => {
     if (cam.fov !== (look.fov || 36)) { cam.fov = look.fov || 36; cam.updateProjectionMatrix(); }
     cam.position.copy(mix(from, to, k)); cam.lookAt(at2 ? mix(at, at2, k) : at);
-    people.forEach((p) => p.face(cam));
+    cam.updateMatrixWorld(); people.forEach((p) => p.face(cam));
     E.render(scene, cam, { ...look, focus: focus ?? cam.position.distanceTo(at2 ? mix(at, at2, k) : at) });
+    (window.__AUD ||= []).push({ cam: cam.clone(), people, scene });   // the frame audit reads who / what was in shot
   };
 
   // ── sets ─────────────────────────────────────────────────────────────

@@ -24,7 +24,7 @@ fix (log it, re-render the full sheet, compare with the previous one, re-check n
 unintended overlap (text, faces, captions, frame edges and the phone safe zone, checked at maximum zoom), and an
 animation quality bar (a signature move per shot, real animation principles, no linear tweens, no slideshow feel).
 **Flow motion is the only motion style, in all six styles: read [references/flow-motion.md](references/flow-motion.md)
-before planning shots.** The camera never cuts. It follows the thing that moves (a thrown coin, a fired ball, a walking
+before planning shots.** **Then read [references/world-detail.md](references/world-detail.md)** (two-colour worlds, counters on objects, depth layers, living details; five of its details per shot). The camera never cuts. It follows the thing that moves (a thrown coin, a fired ball, a walking
 character) from one place into the next. When a scene must change, the world hides it with a hand-off (`trans`):
 `carry`, `portal` (fly through a door, window, screen or hole), `smoke` (smoke, dust, foam), `pass` (something close to
 the lens sweeps across) or `dive` (dolly forward through the shot). The camera eases out onto a reacting face, and the
@@ -68,7 +68,7 @@ and a request to build authorize the build: show the preview sheet, then continu
 
 Which style: body / health / science "what happens if" → **Deep Dive 3D** (or **Inside Out** for a lighter, faster 2D
 look) · creepy, unexplained, true crime, "this happened in 1971" → **Night File 3D** · survival, life hacks, "here's what
-you do" → **Stick Story** · a historical event, "how X happened" → **Paper Atlas** · a funny or clever true story, a con, a loophole, "this guy did X" → **Tall Tale 3D** · money, markets, economy, data
+you do" → **Stick Story** · a historical event, "how X happened" → **Paper Atlas** · a funny or clever true story, a con, a loophole, "this guy did X" → **Tall Tale 3D** · a story explainer ("why X…", "the X who…", a strange rule or object) → **Tall Tale 3D at 50-65 s**, built from the channel playbook in references/world-detail.md §7 · money, markets, economy, data
 ("why X keeps falling") → **Inside Out** with chart, counter and money components built in its flat look. If it isn't obvious, ask once.
 
 Each style = `styles/<style>/style-sheet.png` (the look in one image, drawn by the style's own code) + `STYLE.md` (the rules + the engine manual) +
@@ -144,6 +144,14 @@ reliable source (list them in `script.json` "sources"). Health topics: accurate,
    Iterating on one shot: `node tools/capture.mjs frames review/f "4.2,4.6"` and look.
 
 ## 4. QA: never show a frame you haven't looked at
+**First, the every-frame audit loop** ([references/audit.md](references/audit.md) §0):
+1. Run `node tools/capture.mjs audit review/audit`, which renders every frame (1,000+ for a short).
+2. Fix every line in the report and run it again, looping until it says `AUDIT CLEAN`.
+3. Then Read **every** page and critique every frame. Fix, re-audit and re-read until a full pass finds nothing.
+
+Frame every shot by who is involved (§0c, `core/framing.js`): wide for a group, close for a reaction, and the zoom changes with the story, never one zoom for every shot. In the 3D styles, also check the true-3D staging (§0b): people face where they are going, the camera shows their back or
+side, and the camera moves through the space. A 2D camera in a 3D world doesn't pass. The checks below still apply.
+
 `node tools/capture.mjs sheet review/all.jpg 0.5 10` (a frame every 0.5 s, time-stamped) and read the whole sheet, then key
 frames full size. For every frame ask:
 - **Does it make sense?** One visual mode per shot: if the body is x-ray, ALL of it is x-ray (no shirt sleeves on an x-ray

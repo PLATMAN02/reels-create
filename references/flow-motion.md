@@ -60,6 +60,11 @@ a step card under it.
   sunset and 1 is night. For example, a calm day setup, a sunset for the turn and night for the danger, or
   day → sunset for a happy payoff.
 
+## 3b. True 3D staging (3D styles)
+Flow motion only works if the world is really 3D. Give people headings so that the camera can see their backs and sides
+(`toon.heading`, `toon.lookAt3`). Use over-the-shoulder views that swing round to the face, and orbits, cranes and top-down
+rises. Never use a flat pan across a row of people facing the lens. See references/audit.md §0b.
+
 ## 4. Planning a flow video
 In the shot list, add a **camera path** column next to the emotion and the signature move:
 `S06 · satisfaction · SOLD stamp + coin burst · cam: rides a coin out of the phone → carry to the hallway (S07)`.

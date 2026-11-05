@@ -3,6 +3,67 @@
 Three gates every video passes before the full render, and again after every change. "Looks fine on the sheet" is not a
 pass. Each gate has its own procedure, and you report its result to the user.
 
+## 0. The every-frame audit loop (mandatory, before every render and after every fix)
+Sampled contact sheets miss things: a character half out of frame for a second, a head under a caption, a camera that
+parks. So the last gate is **every frame of the video**, read and critiqued, in a loop until nothing is left.
+1. `node tools/capture.mjs audit review/audit` renders **every frame** (30 fps: a 56 s video is 1,678 frames) into
+   pages of 100 thumbnails (`page-01.jpg` …) and writes `review/audit/report.txt`. The report flags, frame by frame:
+   - `FRAME`: a character, **or an important prop**, sliced by the side of the frame. A head (with its hat) cut by
+     any edge, a prop cut by the top or bottom, or a caption or on-screen card covering a face. Big background
+     people count too.
+     - Every key prop, animal or sign must be marked: `obj.userData.subject = 'crow'`.
+     - Every 2D card or stamp must be registered while it shows: `window.__OVL.push({ name, box: [x0, y0, x1, y1] })`.
+     - Subject boxes are exact: they come from each character's real cut-out plane and each object's bounding box.
+     A character is either fully in frame or cropped only at the bottom with the whole head inside. A character who
+     crosses the edge in a fast move for 5 frames or fewer is a `NOTE`, which is allowed.
+   - `STILL`: 0.8 s or more where the camera barely moves (under 8° a second, measured against the nearest character)
+     and no character moves. `STATIC`: the picture itself is frozen.
+   - `SIZE`: three shots in a row at the same size, with no zoom inside them. The `SIZES` line lists every shot's
+     sizes (wide / full / medium / close / insert). It must read like a film, varying with the story.
+   - `HOOK`: the first 3 s must open on motion and contain at least one visual event.
+   - `REHOOK`: every 5 s window must contain a visual event (a cut, a hand-off, or a big change in the picture).
+2. **Fix every line, then run the audit again.** Loop until it prints `AUDIT CLEAN`. Each loop goes in `review/changes.md`.
+3. **Then Read every page, all of them, in order,** and critique each frame. The script can't judge these:
+   - Does the frame read in one glance?
+   - Is the subject big enough?
+   - Does the camera show a 3D world (§0b), or a flat stage?
+   - Does every prop make sense?
+   - Is anything blocking the subject (a post, a crow, a passing object)?
+   - Do the captions sit clear of what matters?
+   - Would a viewer swipe here?
+   Fix what you find, re-run step 1 and read the touched pages again. **Repeat until a full pass of every page finds
+   nothing new.** Tell the user how many loops it took and what each one fixed.
+4. Never render the final video, or tell the user it's done, while the report has problems or pages are unread.
+   `capture.mjs frames review/dbg "t1,t2"` with `QS='&dbg=1'` draws the audit's character boxes on frames, for debugging.
+
+### 0b. True 3D, not a 2D camera in a 3D world
+In the 3D styles the world is 3D, so the staging has to be too.
+- **People turn away from the camera.** Give every person a heading (`toon.heading = yaw` or `toon.lookAt3(x, z)`):
+  - When the camera is behind someone, we see their back, the back of their head and their ears.
+  - From the side, the body narrows and the face turns.
+  - Nobody faces the lens unless they are talking to the viewer.
+- **People face what they're doing.** Archers face the enemy, a shooter faces the target, two people talking face each other.
+- **The camera moves through the space, not across a stage:** orbits round a character, over-the-shoulder views that
+  swing round to the face, cranes up, a view rising to top-down, a camera that follows an object through depth.
+  Flat sideways pans past a row of people facing the lens are the 2D-stage look; avoid them.
+- **Depth in every frame:** something near the lens, the subject in the middle distance, the world far behind.
+- **Frame width is only about 30° in portrait,** so aim the camera at the subject. Pull the camera back rather than letting a
+  character slide out of the side of the frame.
+
+### 0c. Framing by involvement: the zoom follows the story
+Never leave every shot at the same zoom. In the 3D styles use `core/framing.js`: `fit(on, { size, yaw, pitch })` and
+`camFit(keys, lt)`. The camera frames exactly the people and props in `on`, and recomputes every frame as they move.
+- **A group, two sides, or a crowd** → `wide`. **Whole bodies doing something** → `full`.
+- **One person talking or acting** → `medium`. **A reaction or a reveal on a face** → `close`.
+- **A prop that is the point** (a number, a stamp, a document, a bullseye) → `insert`.
+- **Change size within a shot when the involvement changes:** wide on the crowd, then push in to close on the twist.
+  Zoom out when someone joins; zoom in when one face carries the line.
+- **Leave room for overlays.** Use `down` to place the subject lower when a follow card sits at the top.
+- **Props near people are part of the framing:** a crow on a shoulder, a scoreboard behind the archer. Never let
+  a prop dominate or be half cut. Prefer putting a witness animal *on* the character, where it reads at every size,
+  over putting it on a separate post that gets cut off.
+- **Accessories stay attached.** A lifted hat tips up from the back of the brim; it never floats above the head.
+
 ## 1. Change audit: every fix is re-verified, never assumed
 A fix can break something else: a moved label lands on another label, or an edited kit component changes every shot
 that uses it. After **any** change (script, captions, timing, a shot, a component, the mix):

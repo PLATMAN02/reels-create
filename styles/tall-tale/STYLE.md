@@ -44,6 +44,25 @@ Build every set once at the top, give each set its own cut-outs, then per shot: 
 renders with depth of field), `blit()`, then any 2D overlay (a RETURN TO SENDER stamp). Cues go on the word
 (`cue(Wd('banned', 17), 'stamp')`).
 
+## 3b. True 3D people (toon.js)
+- `new Toon(look, { wide: true })` gives a 1024-wide canvas, so long props (bows, poles, guns) don't clip.
+- `toon.heading = yaw` (0 faces +z, π faces −z) or `toon.lookAt3(x, z)`. The cut-out still turns its plane to the camera,
+  but it draws what the camera really sees:
+  - **front**
+  - **side**: the body narrows and the face turns
+  - **back**: the back of the head, ears and the back of the body, mirrored
+- Give every person a heading in every shot. Leave it `null` only for a deliberate talk-to-camera moment.
+- `toon.name = 'archer'` names the character in the frame audit's report.
+- The medieval kit is in `core/medieval.js`: crossbow, longbow, arrows and bolts, target, tally board, flag, wagon, pavise,
+  stakes, rain, smoke puffs, parchment with a quill and wax seal, and a crow witness. It includes the `HP` hand props.
+- Each shot's `shoot()` must push `{ cam, people }` onto `window.__AUD`, as the example does, so the audit can see who
+  is in frame.
+
+## 3c. Framing by involvement (core/framing.js)
+`const { fit, camFit } = makeFraming(Toon)`. Write camera keys as `{ t, on: [hero, crow.mesh], size: 'medium', yaw, pitch }`
+instead of fixed positions, and render with `const { p, l, fov } = camFit(K, lt)`. Mark props with `userData.subject`
+and register 2D cards in `window.__OVL`, so that the audit checks them. See references/audit.md §0c.
+
 ## 4. QA pitfalls
 - A cut-out seen from the side becomes a sliver: keep the camera within ~60° of facing people (`.face(cam)` handles the rest).
 - People inside furniture: check feet heights (boardwalk 0.18, counter top 1.18 + scale 0.08).

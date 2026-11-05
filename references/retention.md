@@ -4,7 +4,13 @@ Viewers on Shorts, TikTok and Reels decide to swipe in the first second, and aga
 These rules apply to **every** video in **every** style. Plan them before writing shots, show them in the plan, and
 check them in QA. Explicit user choices still win (for example "no CTA" or "slow, calm pacing").
 
-## 1. The hook (0.0-1.5 s): no warm-up
+## 1. The hook (0.0-3 s): no warm-up, strong motion, a creative visual
+The first 3 seconds carry the most weight in the whole video. They must have **strong motion from frame 0** (the camera
+already flying: an orbit, a crane, a chase) **plus a creative visual event**, for example lightning, something landing, an
+object flying at the lens, a reveal or a transformation.
+A character just standing and talking is a weak hook, even if the line is good. `capture.mjs audit` checks the first 3 s
+(HOOK), and that every 5 s window after it has a visual event (REHOOK). A static 5 s is a swipe.
+
 - **Frame 0 is the hook image.** Set `"fade": false` in `script.json` so the video opens on a picture, not black. The
   first frame already shows the most striking thing in the video: the payoff, the danger, the strange object, the big number.
 - **Voice starts at once.** Set `"lead": 0.1` (not 0.4). The first spoken line is at most ~1.5 s and 4-9 words.

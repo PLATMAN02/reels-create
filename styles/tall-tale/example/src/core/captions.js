@@ -50,6 +50,12 @@ export function captionText(text, x = 540, y = CAP.y, sc = 1) {
   ctx.fillStyle = '#FFFFFF'; ctx.fillText(text, 0, 0);
   ctx.restore();
 }
+/** the caption's screen box at time t, or null (for the frame audit) */
+export function captionBox(t) {
+  const c = caps.find((c) => t >= c.s && t < c.e); if (!c) return null;
+  ctx.save(); ctx.font = `900 ${CAP.size}px Inter`; const w = Math.min(CAP.maxW, ctx.measureText(c.text).width); ctx.restore();
+  return [540 - w / 2 - 10, CAP.y - CAP.size * 0.62, 540 + w / 2 + 10, CAP.y + CAP.size * 0.62];
+}
 export function drawCaption(t) {
   const c = caps.find((c) => t >= c.s && t < c.e); if (!c) return;
   const lt = t - c.s; captionText(c.text, 540, CAP.y, lt < 0.1 ? lerp(0.86, 1, eob(seg(lt, 0, 0.1))) : 1);

@@ -31,7 +31,7 @@ export function drawToon(g, look = {}, st = {}) {
   const S = { mood: 'neutral', look: [0, 0], blink: 0, talk: 0, armL: [8, 6], armR: [8, 6], legs: 'stand', phase: 0, lean: 0, bob: 0, squash: 0, ...st };
   g.save();
   g.lineCap = 'round'; g.lineJoin = 'round';
-  if (S.flip) { g.translate(512, 0); g.scale(-1, 1); }
+  if (!!S.flip !== !!S._back) { g.translate(512, 0); g.scale(-1, 1); }
   // whole-body lean pivots at the feet
   g.translate(256, 1000); g.rotate((S.lean || 0) * R2D); g.translate(-256, -1000);
   const sit = S.legs === 'sit', jump = S.legs === 'jump';
@@ -105,8 +105,18 @@ export function drawToon(g, look = {}, st = {}) {
   g.fillStyle = shadeOf(L.head, 0.9); g.beginPath(); g.arc(hx + 52, hy + 44, r, 0, Math.PI * 2); g.rect(hx - 400, hy - 400, 800, 800); g.fill('evenodd');
   g.restore();
   g.strokeStyle = INK; g.lineWidth = LW + 1; g.stroke(head);
-  drawFace(g, L, S, hx, hy);
-  drawHat(g, L, hx, hy, r);
+  if (S._back) {
+    g.strokeStyle = INK; g.lineWidth = 7; [-1, 1].forEach((s) => { g.fillStyle = L.head; g.beginPath(); g.ellipse(hx + s * (r - 4), hy + 14, 20, 30, 0, 0, 7); g.fill(); g.stroke(); });
+    g.fillStyle = shadeOf(L.head, 0.92); g.beginPath(); g.ellipse(hx, hy + 6, r * 0.9, r * 0.86, 0, 0, 7); g.fill();
+    g.strokeStyle = shadeOf(L.head, 0.72); g.lineWidth = 5; g.beginPath(); g.moveTo(hx - 30, hy + r * 0.9); g.quadraticCurveTo(hx, hy + r * 0.78, hx + 30, hy + r * 0.9); g.stroke();
+  } else { g.save(); g.translate((S._turn || 0) * 34, 0); drawFace(g, L, { ...S, look: [(S.look?.[0] || 0) + (S._turn || 0) * 0.7, S.look?.[1] || 0] }, hx, hy); g.restore(); }
+  if (S.coil && S.hatLift > 0.05 && false) {                                           // a coiled spare bowstring sitting on top of the head
+    g.strokeStyle = INK; g.lineWidth = 11; g.beginPath(); g.ellipse(hx + 6, hy - r * 0.92, 58, 20, 0.06, 0, 7); g.stroke();
+    g.strokeStyle = '#EBDDB4'; g.lineWidth = 6; g.beginPath(); g.ellipse(hx + 6, hy - r * 0.92, 58, 20, 0.06, 0, 7); g.stroke();
+    g.beginPath(); g.ellipse(hx + 2, hy - r * 0.97, 44, 14, -0.05, 0, 7); g.stroke();
+  }
+  if (S.hatLift) { const k = Math.min(1, S.hatLift), px = hx - r * 0.95, py = hy - r * 0.62; g.save(); g.translate(px, py); g.rotate(-0.5 * k); g.translate(-px, -py - 14 * k); drawHat(g, L, hx, hy, r); g.restore(); }   // tips up like a lid, hinged at the back of the brim
+  else drawHat(g, L, hx, hy, r);
   g.restore();
   g.restore();
   return hands;
@@ -139,6 +149,11 @@ function drawPattern(g, L, bx, top, bot, bw) {
     spots.slice(0, n).forEach(([dx, dy, r], i) => { g.save(); g.translate(bx + dx, top + dy); g.rotate(r); const cols = ['#D8343F', '#3C6FB6', '#2E8A5A', '#E2B33C', '#8C6FC9']; g.fillStyle = '#FFFDF4'; g.strokeStyle = INK; g.lineWidth = 3;
       g.beginPath(); g.rect(-22, -27, 44, 54); g.fill(); g.stroke(); g.fillStyle = cols[i % 5]; g.fillRect(-15, -20, 30, 32); g.fillStyle = '#FFFDF4'; g.font = '900 13px Inter'; g.textAlign = 'center'; g.fillText(i % 2 ? '5¢' : '2¢', 0, 22);
       g.beginPath(); g.arc(0, -6, 8, 0, 7); g.fill(); g.restore(); });
+  } else if (L.pattern === 'tunic') {                    // a belted tunic with a strap across the chest
+    g.fillStyle = shadeOf(L.body, 0.85); g.fillRect(bx - 140, bot - 70, 280, 90);
+    g.fillStyle = L.patCol || '#6B4226'; g.save(); g.translate(bx, top + 120); g.rotate(-0.62); g.fillRect(-200, -13, 400, 26); g.restore();
+    g.fillRect(bx - 140, bot - 96, 280, 26); g.fillStyle = '#E2B33C'; g.fillRect(bx - 16, bot - 100, 32, 34); g.strokeStyle = INK; g.lineWidth = 4; g.strokeRect(bx - 16, bot - 100, 32, 34);
+    if (L.cross) { g.fillStyle = L.cross; g.fillRect(bx - 12, top + 150, 24, 90); g.fillRect(bx - 42, top + 180, 84, 24); }
   } else if (L.pattern === 'apron') {
     g.fillStyle = L.patCol || '#F4EFE4'; g.beginPath(); g.roundRect(bx - 70, top + 90, 140, bot - top, 18); g.fill();
     g.strokeStyle = shadeOf(L.patCol || '#F4EFE4', 0.8); g.lineWidth = 4; g.beginPath(); g.roundRect(bx - 40, top + 190, 80, 60, 8); g.stroke();
@@ -272,6 +287,24 @@ function drawHat(g, L, hx, hy, r) {
     g.fillStyle = c; g.beginPath(); g.roundRect(hx - r * 0.72, top - 40, r * 1.44, 70, [20, 20, 4, 4]); g.fill(); g.stroke();
     g.fillStyle = INK; g.beginPath(); g.ellipse(hx - 10, top + 34, r * 0.82, 18, 0.04, 0, Math.PI); g.fill();
     g.fillStyle = '#E2B33C'; g.beginPath(); g.arc(hx, top - 6, 13, 0, 7); g.fill(); g.lineWidth = 4; g.stroke();
+  } else if (L.hat === 'archer') {                       // a peaked felt archer's cap with a feather
+    g.beginPath(); g.moveTo(hx - r * 1.02, top + 52); g.quadraticCurveTo(hx - r * 0.7, top - 70, hx + r * 0.35, top - 92);
+    g.quadraticCurveTo(hx + r * 0.95, top - 40, hx + r * 1.02, top + 52); g.quadraticCurveTo(hx, top + 22, hx - r * 1.02, top + 52); g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = shadeOf(c, 0.75); g.beginPath(); g.moveTo(hx - r * 1.08, top + 56); g.quadraticCurveTo(hx, top + 18, hx + r * 1.08, top + 56); g.quadraticCurveTo(hx, top + 42, hx - r * 1.08, top + 56); g.fill(); g.stroke();
+    g.save(); g.translate(hx + r * 0.6, top - 10); g.rotate(0.9); g.fillStyle = L.band || '#F4EFE4'; g.beginPath(); g.ellipse(0, -60, 20, 70, 0, 0, 7); g.fill(); g.lineWidth = 5; g.stroke();
+    g.beginPath(); g.moveTo(0, 8); g.lineTo(0, -126); g.stroke(); g.restore();
+  } else if (L.hat === 'helmet') {                       // a steel kettle hat
+    const st = L.hatCol || '#AEB6C2';
+    g.fillStyle = st; g.beginPath(); g.ellipse(hx, top + 44, r * 1.28, 30, 0, 0, 7); g.fill(); g.stroke();
+    g.beginPath(); g.ellipse(hx, top + 36, r * 0.86, 104, 0, Math.PI, 0); g.closePath(); g.fill(); g.stroke();
+    g.strokeStyle = shadeOf(st, 0.7); g.lineWidth = 6; g.beginPath(); g.moveTo(hx, top - 66); g.lineTo(hx, top + 30); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.55)'; g.beginPath(); g.ellipse(hx - r * 0.42, top - 18, 16, 40, 0.5, 0, 7); g.fill();
+  } else if (L.hat === 'crown') {
+    g.fillStyle = L.hatCol || '#E2B33C'; g.beginPath(); g.moveTo(hx - r * 0.7, top + 40);
+    [[-0.7, -60], [-0.35, 0], [0, -76], [0.35, 0], [0.7, -60]].forEach(([dx, dy], i) => { g.lineTo(hx + r * dx, top + dy); if (i < 4) g.lineTo(hx + r * (dx + 0.175), top + dy * 0.2 + 18); });
+    g.lineTo(hx + r * 0.7, top + 40); g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = '#D8343F'; [-0.35, 0.35].forEach((dx) => { g.beginPath(); g.arc(hx + r * dx, top + 22, 9, 0, 7); g.fill(); g.lineWidth = 4; g.stroke(); });
+    g.fillStyle = '#3C6FB6'; g.beginPath(); g.arc(hx, top + 22, 11, 0, 7); g.fill(); g.stroke();
   } else if (L.hat === 'flower') {
     const fx = hx + r * 0.62, fy = top + 40;
     for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; g.fillStyle = L.hatCol || '#F29BB5'; g.beginPath(); g.arc(fx + Math.cos(a) * 18, fy + Math.sin(a) * 18, 14, 0, 7); g.fill(); g.lineWidth = 4; g.stroke(); }
@@ -318,33 +351,48 @@ function blobTex() {
 
 export class Toon {
   /** height = metres from feet to the top of the head (≈1.75); res = canvas scale (2 = 1024x2048) */
-  constructor(look = {}, { height = 1.75, res = 2, castShadow = true } = {}) {
-    this.look = look; this.res = res;
-    this.canvas = document.createElement('canvas'); this.canvas.width = 512 * res; this.canvas.height = 1024 * res;
+  constructor(look = {}, { height = 1.75, res = 2, castShadow = true, wide = false } = {}) {
+    this.look = look; this.res = res; this.padX = wide ? 256 : 0;      // wide: a 1024-wide canvas so long props (bows) don't clip
+    this.canvas = document.createElement('canvas'); this.canvas.width = (512 + this.padX * 2) * res; this.canvas.height = 1024 * res;
     this.g = this.canvas.getContext('2d');
     this.tex = new THREE.CanvasTexture(this.canvas); this.tex.colorSpace = THREE.SRGBColorSpace; this.tex.anisotropy = 4;
-    const H = height / 0.96, Wd = H / 2;                       // the head top sits ~4% below the canvas top
+    const H = height / 0.96, Wd = (H / 2) * (wide ? 2 : 1);   // the head top sits ~4% below the canvas top
     const geo = new THREE.PlaneGeometry(Wd, H); geo.translate(0, H / 2 - H * (24 / 1024), 0);
     this.mat = new THREE.MeshBasicMaterial({ map: this.tex, transparent: true, alphaTest: 0.04, side: THREE.DoubleSide, toneMapped: false });
     this.mesh = new THREE.Mesh(geo, this.mat);
     this.mesh.castShadow = castShadow;
     this.mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: this.tex, alphaTest: 0.5 });
-    this.blob = new THREE.Mesh(new THREE.PlaneGeometry(Wd * 0.9, Wd * 0.34), new THREE.MeshBasicMaterial({ map: blobTex(), transparent: true, depthWrite: false, opacity: 0.55 }));
+    this.blob = new THREE.Mesh(new THREE.PlaneGeometry(H / 2 * 0.9, H / 2 * 0.34), new THREE.MeshBasicMaterial({ map: blobTex(), transparent: true, depthWrite: false, opacity: 0.55 }));
     this.blob.rotation.x = -Math.PI / 2; this.blob.position.y = 0.01;
     this.group = new THREE.Group(); this.pivot = new THREE.Group(); this.pivot.add(this.mesh); this.group.add(this.pivot, this.blob);
-    this.key = ''; this.H = H; this.set({});
+    this.key = ''; this.H = H; this.heading = null; this.key3d = res >= 1; this._v = { _back: false, _turn: 0 }; this.set({});
   }
   /** redraws only when the state changed */
   set(st = {}) {
-    const key = JSON.stringify(st, (k, v) => (typeof v === 'function' ? (v.name || String(v).length) : typeof v === 'number' ? Math.round(v * 100) / 100 : v));
+    st = { ...st, ...this._v }; const key = JSON.stringify(st, (k, v) => (typeof v === 'function' ? (v.name || String(v).length) : typeof v === 'number' ? Math.round(v * 100) / 100 : v));
     if (key === this.key) return this;
     this.key = key; this.st = st;
     const g = this.g; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    g.scale(this.res, this.res); this.hands = drawToon(g, this.look, st);
+    g.scale(this.res, this.res); g.translate(this.padX, 0); this.hands = drawToon(g, this.look, st);
     this.tex.needsUpdate = true; return this;
   }
   /** turn the cut-out to face the camera (around the vertical axis only) */
-  face(cam) { const p = new THREE.Vector3(); this.group.getWorldPosition(p); this.pivot.rotation.y = Math.atan2(cam.position.x - p.x, cam.position.z - p.z) - this.group.rotation.y; return this; }
+  /** turn the cut-out toward the camera (the plane always faces the lens), but draw what the camera would really see:
+   *  heading (world yaw, 0 = facing +z, Math.PI = facing -z) decides front or back, and a side view narrows the body
+   *  and turns the face. heading = null keeps the old always-front behaviour. */
+  face(cam) {
+    const p = new THREE.Vector3(); this.group.getWorldPosition(p);
+    const toCam = Math.atan2(cam.position.x - p.x, cam.position.z - p.z);
+    this.pivot.rotation.y = toCam - this.group.rotation.y;
+    if (this.heading == null) { this.pivot.scale.x = 1; return this; }
+    let a = toCam - this.heading; a = Math.atan2(Math.sin(a), Math.cos(a));            // camera angle around the person
+    const back = Math.abs(a) > Math.PI / 2, turn = Math.round(Math.sin(a) * 4) / 4 * (back ? -1 : 1);
+    this.pivot.scale.x = 0.62 + 0.38 * Math.abs(Math.cos(a));                           // side-on: narrower
+    if (back !== this._v._back || turn !== this._v._turn) { this._v = { _back: back, _turn: turn }; const st = { ...this.st }; delete st._back; delete st._turn; this.key = ''; this.set(st); }
+    return this;
+  }
+  /** face a world point (sets the heading) */
+  lookAt3(x, z) { const p = this.group.position; this.heading = Math.atan2(x - p.x, z - p.z); return this; }
   tint(col) { this.mat.color.set(col); return this; }
   /** change the look (e.g. more stamps) and force a redraw */
   restyle(patch) { Object.assign(this.look, patch); this.key = ''; return this; }

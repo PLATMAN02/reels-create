@@ -1,0 +1,75 @@
+{
+  "title": "Why India Never Loses to Pakistan",
+  "voice": "am_michael",
+  "speed": 1.05,
+  "lead": 0.1,
+  "outro": 1.4,
+  "gap": 0.22,
+  "fade": false,
+  "music": "bed",
+  "sources": [
+    "ODI World Cups India 8-0 Pakistan (last: 14 Oct 2023, Ahmedabad): NewsBytes, https://www.newsbytesapp.com/news/sports/decoding-india-s-8-0-record-against-pakistan-in-odi-world-cups/story",
+    "Pakistan's last win over India: Asia Cup Super 4, 4 Sep 2022. ESPN calls the 3 Oct 2026 Asian Games final India's seventh straight T20I win over Pakistan; ODIs since 2022 (Asia Cup 2023, World Cup 2023, Champions Trophy 2025) all India wins or no result",
+    "T20 World Cup 2024, New York: India 119 all out beat Pakistan 113/7 by 6 runs. Olympics.com, https://olympics.com/en/news/t20-world-cup-2024-india-vs-pakistan-cricket-match-group-a-result-score",
+    "World Cup 2023, Ahmedabad: Pakistan 155/2 to 191 all out (8 wickets for 36). Free Press Journal, https://www.freepressjournal.in/sports/ind-vs-pak-cwc-2023-pakistan-collapse-from-1552-to-191-all-out-in-425-overs-in-ahmedabad",
+    "Asian Games men's final, 3 Oct 2026: India 211/6 beat Pakistan 192/6 by 19 runs. ESPNcricinfo, https://www.cricinfo.com/series/asian-games-men-s-cricket-competition-2026-1552449/india-vs-pakistan-final-1552779/match-report"
+  ],
+  "lines": [
+    {
+      "text": "India just doesn't lose to Pakistan anymore.",
+      "caps": "INDIA *DOESN'T | LOSE TO *PAKISTAN"
+    },
+    {
+      "text": "At one-day World Cups, it's eight wins from eight,",
+      "caps": "AT WORLD *CUPS | IT'S *8 FROM 8"
+    },
+    {
+      "text": "and in over four years, Pakistan hasn't beaten them once.",
+      "caps": "OVER 4 *YEARS | PAKISTAN *HASN'T | BEATEN THEM *ONCE"
+    },
+    {
+      "text": "So how does India keep doing it?",
+      "caps": "SO *HOW? | INDIA KEEPS *WINNING"
+    },
+    {
+      "text": "Reason one: nerves of steel.",
+      "caps": "REASON *ONE | NERVES OF *STEEL"
+    },
+    {
+      "text": "In twenty twenty-four, India were bowled out for just one hundred nineteen,",
+      "caps": "IN *2024 | INDIA ALL *OUT | FOR JUST *119"
+    },
+    {
+      "text": "and still won by six runs.",
+      "caps": "AND STILL *WON | BY *6 RUNS"
+    },
+    {
+      "text": "Reason two: Pakistan cracks.",
+      "caps": "REASON *TWO | PAKISTAN *CRACKS"
+    },
+    {
+      "text": "In twenty twenty-three, they were cruising at one fifty-five for two,",
+      "caps": "IN *2023 | CRUISING AT *155/2"
+    },
+    {
+      "text": "then lost eight wickets for thirty-six runs.",
+      "caps": "THEN *LOST | EIGHT *WICKETS | FOR *36 RUNS"
+    },
+    {
+      "text": "And the latest? Just last month,",
+      "caps": "THE *LATEST? | LAST *MONTH"
+    },
+    {
+      "text": "India beat them again, in the Asian Games final.",
+      "caps": "INDIA *WON AGAIN | ASIAN GAMES *FINAL"
+    },
+    {
+      "text": "So, will Pakistan ever break the streak?",
+      "caps": "WILL PAKISTAN *EVER | BREAK THE *STREAK?"
+    },
+    {
+      "text": "Follow for part two.",
+      "caps": "FOLLOW FOR *PART 2"
+    }
+  ]
+}

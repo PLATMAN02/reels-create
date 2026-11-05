@@ -37,6 +37,7 @@ You tell Claude a topic. The skill plans a retention-first short, shows you the 
 | 🔊 **Sound** | Whooshes, pops, thuds and a music bed, synthesized | numpy / scipy |
 | 🎞️ **Render** | Every frame captured and encoded, loudness set to -14 LUFS | ffmpeg |
 | 🔍 **Self-audit** | Claude reads contact sheets and key frames, logs every fix and re-checks neighbours | built in |
+| 🖼️ **Thumbnail** | Art from Codex image generation when it's installed (opt-in), otherwise a caption-free frame of the video. The title is always drawn in code, so it's spelled right | Codex CLI · headless Chrome |
 
 ## 🎥 Reference: the demo video
 
@@ -63,6 +64,47 @@ You tell Claude a topic. The skill plans a retention-first short, shows you the 
 | 32.3 s | **Follow** | An iris opens on a follow card with a pulsing button |
 
 The script, shot list and the log of QA fixes are in [`examples/easy-money/`](examples/easy-money).
+
+## 🏏 Reference 2: India vs Pakistan (data explainer)
+
+<table><tr>
+<td width="34%" align="center"><a href="assets/demo-india-pakistan.mp4"><img src="assets/demo-india-pakistan-preview.gif" width="240"></a><br><sub>▶ Click to play the full video</sub></td>
+<td width="33%" align="center"><img src="assets/demo-india-pakistan-thumbnail.jpg" width="240"><br><sub>Thumbnail: Codex art + a title drawn in code</sub></td>
+<td width="33%" valign="top">
+
+[`assets/demo-india-pakistan.mp4`](assets/demo-india-pakistan.mp4)<br>41 s · 1080×1920 · -14 LUFS<br>**style: Inside Out** (flat 2D)
+
+Made from *"create a video on why Pakistan never wins against India in cricket"*. Claude kept every claim true, so the video says *"doesn't lose anymore"* and not a literal *never*. It rests on real, sourced numbers: 8–0 at ODI World Cups, no Pakistan win in over four years, India defending 119, the 155/2 → 191 collapse, and the 2026 Asian Games final.
+
+</td></tr></table>
+
+| Time | Beat | Signature move |
+|---|---|---|
+| 0.0 s | **Hook:** "India just doesn't lose to Pakistan anymore." | The bat cracks the ball out of the stadium as `WIN` stamps slam in on the beats |
+| 3.0 s | 8 from 8 at ODI World Cups | Eight trophy tiles flip blue like dominoes, then `8 – 0` slams in |
+| 6.4 s | Four years, not once | Calendar years flip 2022 → 2026, and a red **0** slams in on *once* |
+| 11.8 s | **Reason 1:** nerves of steel | A steel heart beats a steady 60 BPM while alarms flash |
+| 13.8 s | 2024: all out for 119, still won by 6 | The scoreboard rolls to 119/10, `ALL OUT`, then Pakistan's chase stalls at 113/7 |
+| 20.7 s | **Reason 2:** Pakistan cracks | Glass cracks behind a sweating player |
+| 22.8 s | 2023: 155/2 → 191 all out | Eight stumps explode one after another, `8 FOR 36` slams in, day turns to sunset |
+| 30.0 s | **The latest:** Asian Games final | A night stadium, fireworks, and a gold medal that swings in |
+| 35.3 s | Will the streak break? | A streak wall of seven wins and a pulsing **?** tile |
+| 37.8 s | **Follow** | A follow card with a pulsing button and a bouncing ball |
+
+[![Contact sheet](assets/demo-india-pakistan-contact-sheet.jpg)](assets/demo-india-pakistan-contact-sheet.jpg)
+<sub>The contact sheet Claude reviewed before rendering. The QA pass caught and fixed 12 overlaps and timing issues ([log](examples/india-pakistan/QA-changes.md)).</sub>
+
+The script with sources, the shots, the new cricket components (`cricket.js`: stadium, bat, ball, stumps, scoreboard, flip tiles, medal) and the thumbnail prompt are in [`examples/india-pakistan/`](examples/india-pakistan).
+
+## 🖼️ Thumbnails
+
+```bash
+bash ~/.claude/skills/faceless-shorts/scripts/thumbnail.sh <project> "WHY INDIA|*NEVER LOSES|TO PAKISTAN" "<the payoff scene>"
+```
+
+- **With Codex:** if the [Codex CLI](https://github.com/openai/codex) is installed and logged in with image generation enabled, the script attaches a key frame as the style reference. It asks Codex for 1024×1536 art with **no text, logos, flags or real people**, which takes about a minute on your ChatGPT plan. Claude asks before running it.
+- **Without Codex:** the script uses a frame of the video, rendered without captions, with a dark scrim behind the title. Add `--no-codex` to force this.
+- **The title** is always drawn by `scripts/thumbnail.mjs` in the caption font, never by the image model. `|` starts a new line and `*` makes a word yellow.
 
 ## 🌊 Flow motion: the camera never cuts
 
@@ -160,11 +202,11 @@ script.json ─► Kokoro voice ─► Whisper word times ─► shots drawn in 
 ```text
 .
 ├── SKILL.md            what Claude follows
-├── scripts/            setup, selftest, new_video, voice, words, estimate
+├── scripts/            setup, selftest, new_video, voice, words, estimate, thumbnail
 ├── styles/<style>/     style-sheet.png · STYLE.md · example/ (a complete project)
 ├── references/         flow motion · retention · audit · motion vocabulary · cartoon audio · long-form · publishing
-├── examples/           the demo video's script, shots and QA log
-└── assets/             demo video, preview, contact sheet, style sheets
+├── examples/           each demo video's script, shots and QA log
+└── assets/             demo videos, previews, thumbnails, contact sheets, style sheets
 ```
 
 ## ⚖️ Honesty rules baked in

@@ -7,7 +7,8 @@ description: Create code-rendered faceless shorts and animated cartoon stories w
 
 You make a finished vertical short from a topic: script, voice, word-synced captions, animated shots, sound and
 music, rendered to MP4. **Everything is code**: canvas drawing, headless Chrome capture, ffmpeg, a local Kokoro voice,
-local Whisper word timing, numpy sound. No AI images or video, no API keys, no credits.
+local Whisper word timing, numpy sound. No AI images or video in the film, no API keys, no credits (the one opt-in
+exception is Codex thumbnail art, §5).
 `SKILL` = the folder this file is in, normally `~/.claude/skills/faceless-shorts` (use that absolute path in every
 Bash command; shell state does not persist between calls, so don't rely on an exported variable). Use
 `work/<video-name>/` under the current working directory for projects, with `new_video.sh --dir "$PWD/work"`; use a
@@ -180,13 +181,31 @@ copy only for timing; it writes measured results to `data/audio-report.json`.
 
 ## 5. Deliver
 Open the MP4 for the user (`open <file>` on macOS; the desktop app can also show it via SendUserFile). Also give: a share copy if > 35 MB (`ffmpeg -i in.mp4 -c:v libx264 -crf 21 -preset slow -c:a aac
--b:a 160k -movflags +faststart share.mp4`), the best cover frame (`capture.mjs frames`), a title, a caption and 5-8 hashtags.
-Before delivering, normalize loudness to **-14 LUFS** for YouTube, TikTok and Reels:
-`ffmpeg -i renders/<name>.mp4 -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=11 -ar 48000 -c:a aac -b:a 192k output/<name>.mp4`.
+-b:a 160k -movflags +faststart share.mp4`), a thumbnail (below), a title, a caption and 5-8 hashtags.
+Before delivering, normalize loudness to **-14 LUFS** for YouTube, TikTok and Reels (TP=-2 leaves room for the AAC
+encode; -1.5 measured -1.4 dB true peak after encoding):
+`ffmpeg -i renders/<name>.mp4 -c:v copy -af loudnorm=I=-14:TP=-2:LRA=11 -ar 48000 -c:a aac -b:a 192k -movflags +faststart output/<name>.mp4`.
 Skip this for `voice_locked` mixes unless the user asks, because their levels are measured on purpose. Check the result
 with `ffmpeg -i output/<name>.mp4 -af ebur128 -f null -` (integrated ≈ -14 LUFS, true peak ≤ -1.5 dB).
 For own-recording mode, also give them the script with each line's timing to read against. Offer one round of precise changes
 and re-render only what changed.
+
+**Thumbnail** (every video): `bash SKILL/scripts/thumbnail.sh <proj> "WHY INDIA|*NEVER LOSES|TO PAKISTAN" "<scene>"`
+→ `output/thumbnail.jpg`, 1080×1920. `|` starts a new title line and `*` makes a word yellow. Write the title as a curiosity
+gap of 2-4 words per line, and never just the video title repeated. The script works in two modes:
+- **Codex art (preferred when available):** if the OpenAI Codex CLI is installed, logged in, and `codex features list` shows
+  `image_generation … true`, the script runs `codex exec` with a key frame attached as the style reference. It asks for
+  1024×1536 art with no text, no logos, no flags and no real people, and with plain space in the top 35 % for the title.
+  Describe the scene as the video's payoff moment, in its own characters and colours: who reacts, what just happened,
+  and where. Codex runs on the user's ChatGPT/Codex plan, so **offer it and run it only after the user says yes**. The
+  generation takes about a minute. The prompt, the art and `codex.log` are kept in `<proj>/thumb/`.
+- **Fallback, or with `--no-codex`:** a frame of the video, rendered without captions (the script turns them off for that one
+  frame and then restores `script.json`), with a dark scrim behind the title. Pick the frame with `--frame <t>`.
+- **Either way, the title is drawn in code** (`scripts/thumbnail.mjs`, Inter Black in the caption look), so it is always
+  spelled right. Never let the image model draw text.
+- **Read the thumbnail before delivering:** check that the art has no stray text, logos, extra limbs or real likenesses, and
+  that the title is readable at phone-grid size. If the art is wrong, run again with a sharper scene description, or fall
+  back to `--no-codex`.
 
 ## 5b. Publish only when asked
 Read [references/publishing.md](references/publishing.md) when the user requests an upload. Discover the actual connected
@@ -205,5 +224,6 @@ FPS=24` in front of `node tools/capture.mjs ...` (≈2 s per frame; tell the use
 background, and QA with `sheet review/all.jpg 1 10` first). Their STYLE.md files list the 3D API.
 
 ## Never
-Generate images or video with AI; spend the user's money or credits; upload to YouTube or any host without the user asking and confirming; copy another creator's script, shots or frames;
+Generate images or video with AI for the video itself (the only AI image is the optional Codex thumbnail art in §5, made
+after the user says yes); spend the user's money or credits; upload to YouTube or any host without the user asking and confirming; copy another creator's script, shots or frames;
 overwrite a user's project without asking; deliver unreviewed previews or claim a pipeline was tested when it was only described.

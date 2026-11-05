@@ -1,0 +1,30 @@
+{
+  "title": "3 Easy Ways To Make Your First $100",
+  "voice": "am_puck",
+  "speed": 1.0,
+  "lead": 0.1,
+  "outro": 1.4,
+  "gap": 0.26,
+  "fade": false,
+  "music": "bed",
+  "sources": [
+    "US Federal Trade Commission, consumer advice: 'Job Scams' and 'Business opportunity scams' (promises of easy, fast money with little effort are hallmarks of scams)",
+    "Dollar amounts shown are illustrative examples, labelled as such on the end card. No statistics are claimed."
+  ],
+  "lines": [
+    { "text": "Want your first hundred dollars this week?", "caps": "Your first *hundred? | This *week?" },
+    { "text": "Forget get-rich-quick tricks, they're usually scams.", "caps": "*Get-rich-quick? | Usually *scams." },
+    { "text": "These three easy ways actually work.", "caps": "Three *easy ways | actually *work." },
+    { "text": "Step one: sell the stuff you never use,", "caps": "Step *one: | sell the *stuff," },
+    { "text": "like old phones, bikes or clothes.", "caps": "old *phones, | *bikes, | *clothes." },
+    { "text": "Snap a photo, post it online, and it turns into cash.", "caps": "Snap a *photo, | post it *online, | turns into *cash." },
+    { "text": "Step two: do small jobs for your neighbors,", "caps": "Step *two: | for your *neighbors," },
+    { "text": "like walking dogs or washing cars.", "caps": "walking *dogs, | washing *cars." },
+    { "text": "Step three: sell a skill you already have,", "caps": "Step *three: | sell a *skill," },
+    { "text": "like editing videos or tutoring online.", "caps": "editing *videos, | *tutoring online." },
+    { "text": "But here's the twist:", "caps": "Here's the *twist:" },
+    { "text": "the easiest money is the money you keep, so save some from every job.", "caps": "Money you *keep, | *save some | from every *job." },
+    { "text": "Start today, and that first hundred is closer than you think.", "caps": "Start *today, | *closer than | you *think." },
+    { "text": "Follow for more money tips.", "caps": "*Follow for more." }
+  ]
+}

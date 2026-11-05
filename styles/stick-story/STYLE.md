@@ -27,7 +27,7 @@ Example: `example/` = **WHAT IF THE POWER WENT OUT FOR 3 DAYS?** (34 s, 12 shots
 - New set pieces go in `shots.js` (see `tv`, `plug`, `candle`, `bolt` in the example) or the kit if reusable.
 
 ## Motion graphics (`example/src/core/motion.js`, `import * as FX`)
-Designed cuts: give a shot `trans: { type: 'whip'|'whipV'|'slide'|'glitch'|'flash'|'iris'|'zoom', d, dir }`, centred on its
+Scene changes use flow hand-offs (see "Flow motion" below). Classic mode only (`"motion": "classic"`): `trans: { type: 'whip'|'whipV'|'slide'|'glitch'|'flash'|'iris'|'zoom', d, dir }`, centred on its
 cut (add a `whoosh`/`zip`/`slam` cue at the cut), and never the same type twice in a row. `buildShots()` may also return
 `kicks` (zoom punch + shake), `flashes` and `leaks` for the big words. Helpers: `FX.slamText`, `FX.slamWords`, `FX.swipe`,
 `FX.strike`, `FX.scribble`, `FX.handArrow`, `FX.counter`, `FX.wobble`, `FX.squash`, `FX.blink`. Keep the style's palette in
@@ -37,3 +37,11 @@ every helper call. Full table and recipes: `references/motion-vocabulary.md`.
 - Black figures vanish on night walls → `glow: true` in every night shot.
 - Figures too small in the room → h ≈ 840 for full-body shots.
 - Long captions running off screen → keep chunks short; the bar auto-shrinks but small text is hard to read.
+
+
+## Flow motion (mandatory: references/flow-motion.md)
+The camera never cuts. Every scene change is a hand-off in `shot.trans` (`carry` · `portal` · `smoke` · `pass` · `dive`,
+from `src/core/flow.js`), caused by something in the story and never the same type twice in a row. Inside a shot the
+camera keeps travelling with `camPath: [{ t, x, y, z }, …]` on the shot. Let the light follow the story with `tod` (0 = midday, 0.5 = sunset, 1 = night).
+`capture.mjs check` must print `flow motion: every cut is a designed hand-off`.
+Good hand-offs in this style: a phone screen you fly into, the dust when a box tips, the door to the next room, a hedge passing the lens, a coin that carries the camera to the next step.

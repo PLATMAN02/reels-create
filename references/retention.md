@@ -17,6 +17,10 @@ check them in QA. Explicit user choices still win (for example "no CTA" or "slow
   - payoff first: show the ending image, then "here's how it got there".
   - contradiction: "Everyone says X. It's the opposite."
   - countdown or promise: "Three reasons this keeps falling."
+  - strange action, mid-story: frame 0 shows someone doing something odd ("He sawed a gap into the rail every 39 feet.").
+    The *why* is the open loop.
+  - the climax first: the most dramatic instant (the shot fired, the train derailing), then "See, …" and rewind.
+- **Title formula that pairs with it:** a counter-intuitive why. "Why Perfect Railroads Don't Work." "Why the Second Draw Always Wins."
 - The second line pays off the hook *partially* and opens a loop. Never answer the hook fully in the first 5 s.
 
 ## 2. A re-hook at least every 5 seconds
@@ -33,12 +37,15 @@ timestamps (estimated before voicing, then confirmed from `data/lines.json`). Th
 ## 3. Motion design: no dead frames
 - **Every frame has meaningful motion.** At any instant something on screen is moving with intent: the camera, the
   subject, a prop or a graphic. Never more than ~0.7 s of a fully static picture (a deliberate freeze-frame is the only exception).
-- **Every transition is designed, not just cut.** Use the style's cut motion (Inside Out, Stick Story and Paper Atlas
-  punch in and flash automatically) and add a motion link per cut:
-  - match cut: the same shape or position carries over from one shot to the next.
-  - whip or slide: the outgoing motion direction continues into the next shot.
-  - zoom-through: push into an object and come out inside the next scene.
-  - The 3D styles (Deep Dive, Night File, Tall Tale) have no automatic punch: every shot must open with a camera move already underway.
+- **Flow motion: the camera never cuts** (references/flow-motion.md, all six styles). Every scene change is a hand-off
+  caused by the world:
+  - `carry`: ride along with the thing that moves.
+  - `portal`: fly through a door, window, screen or hole.
+  - `smoke`: smoke, dust or foam fills the lens.
+  - `pass`: something close to the lens sweeps across.
+  - `dive`: dolly forward through the shot.
+  The camera keeps its speed through the hand-off, then eases out onto a reacting face. No glitch, flash or iris
+  overlays, and no plain hard cuts. In 3D, every shot also opens with the camera already travelling on its path.
 - **Elements enter and exit with easing**: overshoot pops (`eob`) for labels, eased slides (`eio`) for travel, squash and
   stretch on landings and anticipation before big actions. Nothing appears or disappears in a single frame unless it's a
   hard comedic or shock cut.
@@ -56,6 +63,22 @@ timestamps (estimated before voicing, then confirmed from `data/lines.json`). Th
   (danger red, warm relief, dark tension) and **sound** (a rising alarm, a soft sparkle for relief, a `slam` for shock).
 - Animate faces on the beat: the reaction lands on the word, not after it.
 
+## 4b. Story explainers: the formula behind 8-21M-view cartoon shorts
+Teach the fact through a tiny story, not a list:
+- **A hero with a strange idea, and a rival who mocks it.** Give them names, one look each, and big face reactions.
+  Anger shows as a colour flush plus steam; fear shows as sweat.
+- **The science is the reveal.** Show it inside the world: color the object by its value (rails glowing yellow as they
+  heat), and put text on props (newspaper headlines, banners, signs) instead of overlay pills.
+- **Make the invisible visible with a literal metaphor:** a control room inside a head with the eyes as windows, or a
+  sweating gunpowder bag inside a cannon.
+- **A close-up with a size reference** for tiny mechanisms: "you could fit a sheet of paper in the gap."
+- **A running motif:** plant one sound or word early (a *clickety-clack*) and call back to it twice. It can become the punchline.
+- **Turn to the viewer's life** about two-thirds in: "Imagine your phone sliding off a table…", with the character
+  looking into the camera.
+- **The rival's comeuppance is the payoff.** Story shorts may run 50-65 s, and montage cuts may come every 1-1.5 s.
+- **Honesty:** the characters can be invented, but the science, dates and numbers are real and sourced. Say "imagine"
+  when a scene is illustrative.
+
 ## 5. The ending: payoff, then follow
 - The last narrated line stays a punchy payoff that loops back to the hook.
 - Every video then ends with a **follow call to action**, spoken and shown:
@@ -66,6 +89,9 @@ timestamps (estimated before voicing, then confirmed from `data/lines.json`). Th
   - Keep the card clear of the caption zone (or let the CTA line be the caption) and hold it ≥ 1.2 s before the end.
 - **Disclaimers** (finance, health) sit on the end card in small text. They never replace the CTA.
 - The very last frame should sit close to frame 0 visually, so the loop replays smoothly.
+- **Loop ending (optional; offer it for story shorts):** the payoff image and its sentence run straight back into the
+  opening frame and line. There's no follow card, the spoken CTA is optional, and it may go after the first big payoff
+  mid-video. The follow card stays the default unless the user picks the loop.
 
 ## 6. Other modes
 - **Own recording / voiceover-first (cartoon audio):** the recording sets the clock, so don't retime it. Ask the user

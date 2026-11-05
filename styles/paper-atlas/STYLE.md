@@ -26,7 +26,7 @@ Example: `example/` = **HOW ONE BAKERY BURNED DOWN LONDON** (1666; 41 s, 10 shot
 - The example adds `house`, `flame`, `smoke`, `wind`, `stPauls`, `oven` in `shots.js`.
 
 ## Motion graphics (`example/src/core/motion.js`, `import * as FX`)
-Designed cuts: give a shot `trans: { type: 'whip'|'whipV'|'slide'|'glitch'|'flash'|'iris'|'zoom', d, dir }`, centred on its
+Scene changes use flow hand-offs (see "Flow motion" below). Classic mode only (`"motion": "classic"`): `trans: { type: 'whip'|'whipV'|'slide'|'glitch'|'flash'|'iris'|'zoom', d, dir }`, centred on its
 cut (add a `whoosh`/`zip`/`slam` cue at the cut), and never the same type twice in a row. `buildShots()` may also return
 `kicks` (zoom punch + shake), `flashes` and `leaks` for the big words. Helpers: `FX.slamText`, `FX.slamWords`, `FX.swipe`,
 `FX.strike`, `FX.scribble`, `FX.handArrow`, `FX.counter`, `FX.wobble`, `FX.squash`, `FX.blink`. Keep the style's palette in
@@ -35,3 +35,11 @@ every helper call. Full table and recipes: `references/motion-vocabulary.md`.
 ## 3. QA pitfalls we've hit
 - Timeline or labels colliding with the caption strip → keep them above y 1450.
 - Map labels unreadable under coloured marks → put them on a `slip`.
+
+
+## Flow motion (mandatory: references/flow-motion.md)
+The camera never cuts. Every scene change is a hand-off in `shot.trans` (`carry` · `portal` · `smoke` · `pass` · `dive`,
+from `src/core/flow.js`), caused by something in the story and never the same type twice in a row. Inside a shot the
+camera keeps travelling with `camPath: [{ t, x, y, z }, …]` on the shot. Let the light follow the story with `tod` (0 = midday, 0.5 = sunset, 1 = night).
+`capture.mjs check` must print `flow motion: every cut is a designed hand-off`.
+Good hand-offs in this style: riding a ship or rider along the crimson route, flying into a map pin, smoke from a battle or a fire, a paper fold or torn edge passing the lens, sunset for the turning point.

@@ -33,7 +33,7 @@ You tell Claude a topic. The skill plans a retention-first short, shows you the 
 | 📝 **Script** | A hook on frame 0, a new reason to keep watching every ≤ 5 s, a twist, a payoff, a follow call to action | Claude |
 | 🎙️ **Voice** | Natural narration, spoken locally | Kokoro-82M |
 | ⏱️ **Timing** | Every word timed, so each cut and caption lands on its word | faster-whisper |
-| 🎨 **Animation** | Characters, rooms, props, kinetic type, transitions, all drawn in code | Canvas + headless Chrome |
+| 🎨 **Animation** | Characters, rooms, props and kinetic type, with a **flow-motion camera** that follows the action from scene to scene, all drawn in code | Canvas / three.js + headless Chrome |
 | 🔊 **Sound** | Whooshes, pops, thuds and a music bed, synthesized | numpy / scipy |
 | 🎞️ **Render** | Every frame captured and encoded, loudness set to -14 LUFS | ffmpeg |
 | 🔍 **Self-audit** | Claude reads contact sheets and key frames, logs every fix and re-checks neighbours | built in |
@@ -42,7 +42,7 @@ You tell Claude a topic. The skill plans a retention-first short, shows you the 
 
 [`assets/demo-easy-money.mp4`](assets/demo-easy-money.mp4) · 35 s · 1080×1920 · -14 LUFS · **style: Stick Story**
 
-> *"3 Easy Ways to Make Your First $100"* was made from a one-line request. It has 15 shots, and each shot has its own signature move.
+> *"3 Easy Ways to Make Your First $100"* was made from a one-line request. It has 15 shots, each with its own signature move, and **no hard cuts**: the camera flies into the phone, rides a coin to the neighbors, goes through the front door, passes a hedge, and dives into the laptop.
 
 [![Contact sheet: one frame every 0.5 s](assets/demo-contact-sheet.jpg)](assets/demo-contact-sheet.jpg)
 <sub>Contact sheet (a frame every 0.5 s), the same one Claude reviewed before rendering.</sub>
@@ -63,6 +63,28 @@ You tell Claude a topic. The skill plans a retention-first short, shows you the 
 | 32.3 s | **Follow** | An iris opens on a follow card with a pulsing button |
 
 The script, shot list and the log of QA fixes are in [`examples/easy-money/`](examples/easy-money).
+
+## 🌊 Flow motion: the camera never cuts
+
+Modeled on story-cartoon shorts that hold viewers for a full minute (8 to 21 million views each). We studied their
+camera frame by frame and rebuilt the craft in code; their stories, characters and shots are not copied. In every
+style, each scene change is a **hand-off caused by the world**:
+
+| hand-off | on screen | example in the demo |
+|---|---|---|
+| `carry` | the camera rides along with a moving object | a coin flies from the SOLD phone to the neighbors' hallway |
+| `portal` | the camera flies through a door, window, screen or hole | into the phone, through the front door, into the laptop |
+| `smoke` | smoke, dust or foam fills the lens and parts on the new place | dust from the tipped box, soap foam from the car wash |
+| `pass` | something close to the lens sweeps across | a post, a hedge, a falling blind |
+| `dive` | the camera dollies forward through the shot | into step tile "1" |
+
+[![Frames through the hand-offs](assets/demo-handoffs.jpg)](assets/demo-handoffs.jpg)
+<sub>Three frames through each hand-off: the camera carries through every scene change.</sub>
+
+Inside shots the camera keeps travelling (`camPath` in 2D, spline `pathCam` and chase `followCam` in 3D), and the light
+moves from day to sunset to night with the story (`tod`). `capture.mjs check` turns any leftover hard cut into an
+automatic hand-off and lists it, so every video flows even before it's polished. The rules are in
+[`references/flow-motion.md`](references/flow-motion.md).
 
 ## 🎭 Six visual styles
 
@@ -89,9 +111,10 @@ Every video, in every style, follows [`references/retention.md`](references/rete
 
 - **Hook on frame 0:** no black frame, no "in this video", and the voice starts within 0.1 s.
 - **A re-hook at least every 5 seconds:** open loops, numbered steps, myth busts, twists.
-- **No dead frames:** something is always moving, and every cut is a designed transition (whip, glitch, flash, iris, zoom-through, slide).
+- **No dead frames and no hard cuts:** something is always moving, and every scene change is a flow hand-off (carry, portal, smoke, pass, dive).
 - **One emotion per shot:** shown through the face, the colour and the sound.
-- **A follow call to action:** spoken, with an animated follow card at the end.
+- **A follow call to action:** spoken, with an animated follow card at the end, or a seamless **loop ending** for story shorts.
+- **Story explainers:** a hero with a strange idea and a rival who mocks it, the science shown inside the world (heat-colored rails, newspaper headlines), a running sound gag, and a turn to the viewer's own life.
 
 And three gates before anything is rendered ([`references/audit.md`](references/audit.md)): a **change audit** (every fix is logged and the whole sheet re-checked), a **zero-overlap audit** (text, faces, captions and the phone safe zone), and an **animation quality bar** (a signature move in every shot, with no linear tweens).
 
@@ -139,7 +162,7 @@ script.json ─► Kokoro voice ─► Whisper word times ─► shots drawn in 
 ├── SKILL.md            what Claude follows
 ├── scripts/            setup, selftest, new_video, voice, words, estimate
 ├── styles/<style>/     style-sheet.png · STYLE.md · example/ (a complete project)
-├── references/         retention · audit · motion vocabulary · cartoon audio · long-form · publishing
+├── references/         flow motion · retention · audit · motion vocabulary · cartoon audio · long-form · publishing
 ├── examples/           the demo video's script, shots and QA log
 └── assets/             demo video, preview, contact sheet, style sheets
 ```

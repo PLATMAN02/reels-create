@@ -49,3 +49,11 @@ renders with depth of field), `blit()`, then any 2D overlay (a RETURN TO SENDER 
 - People inside furniture: check feet heights (boardwalk 0.18, counter top 1.18 + scale 0.08).
 - Shadows only fall inside the sun's shadow box: move `sun.key.target` near the action when you build a new set.
 - Rendering speed: same as Deep Dive (`SOFTWARE_GL=1 QS='&res=0.6&aa=0&shadow=1024' FPS=24` without a GPU, ≈2-3 s/frame).
+
+
+## Flow motion (mandatory: references/flow-motion.md)
+The camera never cuts. Every scene change is a hand-off in `shot.trans` (`carry` · `portal` · `smoke` · `pass` · `dive`,
+from `src/core/flow.js`), caused by something in the story and never the same type twice in a row. Inside a shot the
+camera keeps travelling with `pathCam(cam, pts, looks, k, { ease })` / `followCam(cam, pos, vel)` / `ballistic(a, b, h, k)` from `src/core/flow3d.js`. Let the light follow the story with `tod` (0 = midday, 0.5 = sunset, 1 = night).
+`capture.mjs check` must print `flow motion: every cut is a designed hand-off`.
+Good hand-offs in this style: following a parcel, train or thrown object down the street (`followCam`), through a shop door or window (`portal`), a passing wagon or post, steam from the train.

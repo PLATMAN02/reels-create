@@ -138,7 +138,7 @@ export function buildShots() {
 
   // S02 · MYTH BUST: a flashing GET RICH QUICK ad gets struck out, red X on "scams"
   { const st = cut(1), us = Wd('usually', 1) - st, sc = Wd('scams', 1) - st;
-    add({ id: 'S02', at: st, cam: [540, 860], zoom: 0.07, trans: { type: 'glitch', d: 0.26 }, note: 'GET RICH QUICK ad flashing; strike + red X on "scams"', draw(lt, d, t) {
+    add({ id: 'S02', at: st, cam: [540, 860], zoom: 0.07, trans: { type: 'portal', hole: 'rect', aspect: 0.55, x: 585, y: 890, r: 60, edge: 'frame' }, note: 'GET RICH QUICK ad flashing; strike + red X on "scams"', draw(lt, d, t) {
       K.livingRoom({}); tint(`rgba(226,87,76,${lt > sc ? 0.32 : 0.16})`);
       const fl = Math.floor(lt * 7) % 2;
       bigPhone(610, 760, 1.12, FX.nz(lt * 3, 2) * 0.04, () => {
@@ -155,7 +155,7 @@ export function buildShots() {
 
   // S03 · THE PROMISE: gold tiles 1, 2, 3 slam in one after another, hero turns determined
   { const st = cut(2), a = Wd('three', 2) - st, b = Wd('easy', 2) - st, c = Wd('ways', 2) - st, wk = Wd('work', 2) - st;
-    add({ id: 'S03', at: st, cam: [540, 900], zoom: 0.06, trans: { type: 'flash', d: 0.24 }, note: 'tiles 1-2-3 slam in staggered; check on "work"', draw(lt, d, t) {
+    add({ id: 'S03', at: st, cam: [540, 900], zoom: 0.06, trans: { type: 'pass', dir: -1, shape: 'post' }, note: 'tiles 1-2-3 slam in staggered; check on "work"', draw(lt, d, t) {
       K.livingRoom({});
       K.person({ x: 420, y: GROUND, h: 820, mood: lt > a ? 'determined' : 'calm', look: [0.4, -1], blink: blink(t, 1), arms: lt > wk ? { L: [150, 10], R: [150, 10] } : undefined });
       tile(1, 260, 440, lt, a); tile(2, 540, 440, lt, b); tile(3, 820, 440, lt, c);
@@ -165,7 +165,7 @@ export function buildShots() {
 
   // S04 · STEP 1: hero tips a box, old stuff flies out on arcs and lands with a squash
   { const st = cut(3), sf = Wd('stuff', 3) - st;
-    add({ id: 'S04', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'whip', dir: 1, d: 0.28 }, note: 'Step 1 card; box tips on "stuff", items arc out', draw(lt, d, t) {
+    add({ id: 'S04', at: st, camPath: [{ t: 0, x: 600, y: 980, z: 1.1 }, { t: 0.9, x: 540, y: 1000, z: 1.0 }, { t: 2.2, x: 690, y: 1180, z: 1.14 }], trans: { type: 'dive', x: 260, y: 440 }, note: 'Step 1 card; box tips on "stuff", items arc out', draw(lt, d, t) {
       K.livingRoom({});
       const tip = eio(seg(lt, sf - 0.1, sf + 0.25));
       box(760, 1500, 1, tip);
@@ -180,7 +180,7 @@ export function buildShots() {
 
   // S05 · THE ITEMS: phone, bike, shirt drop in on their words, then get circled
   { const st = cut(4), w1 = Wd('phones', 4) - st, w2 = Wd('bikes', 4) - st, w3 = Wd('clothes', 4) - st;
-    add({ id: 'S05', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'slide', dir: 1, d: 0.26 }, note: 'items drop in on their word; scribble circle', draw(lt, d, t) {
+    add({ id: 'S05', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'smoke', x: 760, y: 1380, col: '#EADFC9', shade: '#CDBE9F', d: 0.46 }, note: 'items drop in on their word; scribble circle', draw(lt, d, t) {
       ctx.fillStyle = P.wall; ctx.fillRect(-300, -300, W + 600, FLOOR + 300); ctx.fillStyle = P.floor; ctx.fillRect(-300, FLOOR, W + 600, 900);
       const drop = (fn, x, y, t0) => { if (lt < t0 - 0.25) return; const u = seg(lt, t0 - 0.25, t0), [sx, sy] = FX.squash(lt, t0, 0.24); ell(x, y + 6, 130 * u, 18 * u, 'rgba(0,0,0,0.15)');
         ctx.save(); ctx.translate(x, lerp(200, y, u * u)); ctx.scale(sx, sy); fn(); ctx.restore(); };
@@ -193,7 +193,7 @@ export function buildShots() {
 
   // S06 · SNAP, POST, SOLD: zoom into the phone; shutter flash, listing slides up, SOLD stamp + coins burst
   { const st = cut(5), ph = Wd('photo', 5) - st, on = Wd('online', 5) - st, ca = Wd('cash', 5) - st;
-    add({ id: 'S06', at: st, cam: [540, 820], zoom: 0.06, trans: { type: 'zoom', x: 540, y: 1000, d: 0.3 }, note: 'phone: snap, listing, SOLD + $45 on "cash"', draw(lt, d, t) {
+    add({ id: 'S06', at: st, cam: [540, 820], zoom: 0.06, trans: { type: 'portal', hole: 'rect', aspect: 0.55, x: 225, y: 1160, r: 95, edge: 'frame' }, note: 'phone: snap, listing, SOLD + $45 on "cash"', draw(lt, d, t) {
       ctx.fillStyle = P.wall; ctx.fillRect(-300, -300, W + 600, H + 600); ctx.fillStyle = P.floor; ctx.fillRect(-300, FLOOR + 100, W + 600, 900);
       bigPhone(540, 820, 1.05, 0, () => {
         const up = eio(seg(lt, on, on + 0.4));
@@ -209,7 +209,7 @@ export function buildShots() {
 
   // S07 · STEP 2: hero walks to the neighbor's door, knocks, it swings open
   { const st = cut(6), nb = Wd('neighbors', 6) - st, kn = Wd('jobs', 6) - st;
-    add({ id: 'S07', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'whip', dir: -1, d: 0.28 }, note: 'Step 2 card; walk, knock, door opens on "neighbors"', draw(lt, d, t) {
+    add({ id: 'S07', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'carry', dir: -1, carry: (m, u) => coin(540 + (0.5 - u) * 240, 900 - Math.sin(Math.PI * u) * 260, 1.7, u * 16) }, note: 'Step 2 card; walk, knock, door opens on "neighbors"', draw(lt, d, t) {
       const op = eo(seg(lt, nb - 0.1, nb + 0.35));
       K.hallway({ a: '4A', b: '4B', openB: op });
       if (op > 0.05) K.person({ x: 820, y: GROUND - 20, h: 760, dir: -1, mood: 'happy', look: [-1, 0], cap: P.red, arms: { L: [-6, 14], R: [lerp(0, 120, op), 20] } });
@@ -222,7 +222,7 @@ export function buildShots() {
 
   // S08 · DOG WALK: the dog drags the hero down the street (parallax houses, speed lines)
   { const st = cut(7), dg = Wd('dogs', 7) - st;
-    add({ id: 'S08', at: st, cam: [540, 1100], zoom: 0.04, trans: { type: 'slide', dir: 1, d: 0.26 }, note: 'dog drags the hero; parallax street', draw(lt, d, t) {
+    add({ id: 'S08', at: st, cam: [540, 1100], zoom: 0.04, trans: { type: 'portal', hole: 'rect', aspect: 0.54, x: 810, y: 1110, r: 280, edge: 'frame', col: '#7A5236' }, note: 'dog drags the hero; parallax street', draw(lt, d, t) {
       street(lt * 900);
       const pull = lt > dg ? 1 : 0.4, bob = Math.abs(Math.sin(lt * 14)) * 14;
       speedLines(360, 1200, lt);
@@ -235,7 +235,7 @@ export function buildShots() {
 
   // S08b · CAR WASH: hero scrubs a car, bubbles rise, +$20 pops on "cars"
   { const st = Wd('washing', 7) - 0.1, cr = Wd('cars', 7) - st;
-    add({ id: 'S08b', at: st, cam: [540, 1150], zoom: 0.06, trans: { type: 'whip', dir: 1, d: 0.26 }, note: 'car wash, bubbles, +$20', draw(lt, d, t) {
+    add({ id: 'S08b', at: st, cam: [540, 1150], zoom: 0.06, trans: { type: 'pass', dir: -1, shape: 'foliage' }, note: 'car wash, bubbles, +$20', draw(lt, d, t) {
       street(200 + lt * 40);
       car(600, GROUND - 10, 1.1);
       for (let k = 0; k < 10; k++) { const u = (lt * 0.9 + rnd(k)) % 1, bx = 420 + rnd(k + 5) * 420 + Math.sin(lt * 4 + k) * 20; ctx.beginPath(); ctx.arc(bx, 1350 - u * 380, 14 + rnd(k + 2) * 16, 0, TAU); ctx.strokeStyle = `rgba(255,255,255,${0.9 * (1 - u)})`; ctx.lineWidth = 5; ctx.stroke(); }
@@ -246,7 +246,7 @@ export function buildShots() {
 
   // S09 · STEP 3: hero types at the kitchen counter; lightbulb thought on "skill"
   { const st = cut(8), sk = Wd('skill', 8) - st;
-    add({ id: 'S09', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'whipV', dir: 1, d: 0.28 }, note: 'Step 3 card; laptop, lightbulb on "skill"', draw(lt, d, t) {
+    add({ id: 'S09', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'smoke', x: 600, y: 1380, col: '#FFFFFF', shade: '#D6E6F0', d: 0.4 }, note: 'Step 3 card; laptop, lightbulb on "skill"', draw(lt, d, t) {
       K.kitchen({});
       laptop(720, FLOOR - 270, 1.1, lt > sk);
       K.person({ x: 430, y: GROUND, h: 840, mood: lt > sk ? 'happy' : 'determined', look: [1, 0.4], blink: blink(t, 2), arms: { L: [70, 30 + Math.sin(lt * 20) * 10], R: [75, 35 + Math.cos(lt * 19) * 10] } });
@@ -257,7 +257,7 @@ export function buildShots() {
 
   // S10 · ON SCREEN: zoom into the laptop; edit timeline builds itself, then a tutoring call; +$35
   { const st = cut(9), ed = Wd('editing', 9) - st, tu = Wd('tutoring', 9) - st, onl = Wd('online', 9) - st;
-    add({ id: 'S10', at: st, cam: [540, 860], zoom: 0.05, trans: { type: 'zoom', x: 720, y: 1000, d: 0.3 }, note: 'video edit timeline, then tutoring call, +$35', draw(lt, d, t) {
+    add({ id: 'S10', at: st, cam: [540, 860], zoom: 0.05, trans: { type: 'portal', hole: 'rect', aspect: 1.58, x: 720, y: 964, r: 105, edge: 'frame' }, note: 'video edit timeline, then tutoring call, +$35', draw(lt, d, t) {
       ctx.fillStyle = P.wallShade; ctx.fillRect(-300, -300, W + 600, H + 600);
       rr(140, 500, 800, 620, 34); ctx.fillStyle = P.ink; ctx.fill();
       ctx.beginPath(); ctx.moveTo(80, 1160); ctx.lineTo(1000, 1160); ctx.lineTo(950, 1120); ctx.lineTo(130, 1120); ctx.closePath(); ctx.fillStyle = '#B8BEC6'; ctx.fill();
@@ -284,7 +284,7 @@ export function buildShots() {
 
   // S11 · THE TWIST: near-silence, dark room, big surprised face; TWIST slams in
   { const st = cut(10), tw = Wd('twist', 10) - st;
-    add({ id: 'S11', at: st, cam: [540, 900], zoom: 0.1, trans: { type: 'glitch', d: 0.24 }, note: 'twist: big face, TWIST slam', draw(lt, d, t) {
+    add({ id: 'S11', at: st, cam: [540, 900], zoom: 0.1, trans: { type: 'pass', axis: 'y', dir: 1, shape: 'wall', col: '#22304A' }, note: 'twist: big face, TWIST slam', draw(lt, d, t) {
       ctx.fillStyle = P.nWall; ctx.fillRect(-300, -300, W + 600, H + 600);
       const g = ctx.createRadialGradient(540, 1000, 50, 540, 1000, 700); g.addColorStop(0, 'rgba(255,217,138,0.35)'); g.addColorStop(1, 'rgba(255,217,138,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       const sq = FX.squash(lt, tw, 0.08);
@@ -298,7 +298,7 @@ export function buildShots() {
   // S12 · KEEP SOME: hero flicks coins on arcs into a SAVE jar that fills up
   { const st = Wd('money', 11) - 0.14, mo = Wd('money', 11) - st, kp = Wd('keep', 11) - st, sv = Wd('save', 11) - st, jb = Wd('job', 11) - st;
     const flips = []; for (let k = 0; k < 8; k++) flips.push(mo + k * 0.36);
-    add({ id: 'S12', at: st, cam: [540, 1000], zoom: 0.05, trans: { type: 'flash', d: 0.22 }, note: 'coins arc into SAVE jar; SAVE slams on "save"', draw(lt, d, t) {
+    add({ id: 'S12', at: st, cam: [540, 1000], zoom: 0.05, tod: (lt, d) => 0.3 * eio(clamp(lt / d)), trans: { type: 'dive', x: 540, y: 1080 }, note: 'coins arc into SAVE jar; SAVE slams on "save"', draw(lt, d, t) {
       K.livingRoom({});
       let hand = [520, 1100];
       K.person({ x: 300, y: GROUND, h: 840, mood: 'happy', look: [1, 0], blink: blink(t), arms: { L: [-6, 14], R: [70 + Math.sin(lt * 9) * 12, -10] }, hold: (x, y) => { hand = [x, y]; coin(x + 10, y - 30, 0.7, lt * 3); } });
@@ -315,7 +315,7 @@ export function buildShots() {
 
   // S13 · PAYOFF: back home, the three earnings add up and the counter locks on $100
   { const st = cut(12), hu = Wd('hundred', 12) - st, cl = Wd('closer', 12) - st;
-    add({ id: 'S13', at: st, cam: [540, 900], zoom: 0.06, trans: { type: 'whip', dir: -1, d: 0.28 }, note: '+45 +20 +35 → $100 lock on "hundred"', draw(lt, d, t) {
+    add({ id: 'S13', at: st, tod: (lt) => 0.3 + 0.2 * eio(clamp(lt / 2)), camPath: [{ t: 0, x: 570, y: 640, z: 1.18 }, { t: 1.3, x: 540, y: 900, z: 1.0 }, { t: 3.4, x: 540, y: 900, z: 1.06 }], trans: { type: 'carry', axis: 'y', dir: -1, carry: (m, u) => coin(560, 960 + (0.5 - u) * 300, 1.8, u * 16) }, note: '+45 +20 +35 → $100 lock on "hundred"', draw(lt, d, t) {
       K.livingRoom({});
       const pills = ['+$45', '+$20', '+$35'];
       pills.forEach((p, k) => { const t0 = 0.1 + k * 0.18, fly = eio(seg(lt, hu - 0.55, hu - 0.1)); if (lt < t0 || fly >= 1) return;
@@ -332,9 +332,9 @@ export function buildShots() {
 
   // S14 · FOLLOW: iris opens on the follow card, button pulses, disclaimer below
   { const st = cut(13), fo = Wd('follow', 13) - st;
-    add({ id: 'S14', at: st, cam: [540, 860], zoom: 0.04, trans: { type: 'iris', x: 540, y: 820, d: 0.34 }, note: 'follow card with pulsing button + disclaimer', draw(lt, d, t) {
+    add({ id: 'S14', at: st, cam: [540, 860], zoom: 0.04, tod: 0.5, trans: { type: 'portal', x: 600, y: 440, r: 130, edge: 'none' }, note: 'follow card with pulsing button + disclaimer', draw(lt, d, t) {
       K.livingRoom({}); tint('rgba(28,28,34,0.45)');
-      const pop = eob(seg(lt, 0.05, 0.4));
+      const pop = eob(seg(lt, -0.22, 0.2));   // already open while the portal reveals it
       ctx.save(); ctx.translate(540, 780); ctx.scale(pop, pop); ctx.translate(-540, -780);
       rr(168, 448, 760, 680, 48); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill(); rr(160, 440, 760, 680, 48); ctx.fillStyle = P.navy; ctx.fill();
       coin(540, 560, 1.1, lt * 4);

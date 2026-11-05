@@ -4,6 +4,7 @@ import { W, H, setCtx, ctx, clamp, eo, eio } from './core/lib.js';
 import { T, loadTiming } from './core/timing.js';
 import { buildCaptions, drawCaption, captionList } from './core/captions.js';
 import { kickCam, finishing, composite, layer } from './core/motion.js';
+import * as FLOW from './core/flow.js';
 import { buildShots } from './shots.js';
 
 const cv = document.getElementById('cv');
@@ -21,20 +22,23 @@ function paintShot(i, t, c) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.letterSpacing = '0px'; c.filter = 'none'; c.globalCompositeOperation = 'source-over';
   c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
   // camera: punch-in on a plain cut + a slow push across the shot ("camera always moving") + kicks (punch zoom / shake)
+  // flow motion: an optional camera path (sh.camPath keys or fn) replaces the fixed framing; cuts are hand-offs, not punches
+  const cp = sh.camPath ? FLOW.camAt(sh.camPath, lt) : null;
   const punch = sh.trans ? 1 : 1 + PUNCH * (1 - eo(clamp(lt / PUNCH_T)));
-  const drift = 1 + (sh.zoom ?? 0.06) * eio(clamp(lt / d)), k = kickCam(t, OP._kicks), z = punch * drift * k.z;
-  const [cx, cy] = sh.cam || [540, 900];
+  const drift = cp ? (cp.z ?? 1) : 1 + (sh.zoom ?? 0.06) * eio(clamp(lt / d)), k = kickCam(t, OP._kicks), z = punch * drift * k.z;
+  const [cx, cy] = cp ? [cp.x, cp.y] : (sh.cam || [540, 900]);
   c.save(); c.translate(cx + k.dx, cy + k.dy); c.rotate(k.rot); c.scale(z, z); c.translate(-cx, -cy);
   sh.draw(lt, d, t);
   c.restore();
+  if (sh.tod != null) FLOW.grade(c, typeof sh.tod === 'function' ? sh.tod(lt, d) : sh.tod);   // day → sunset → night
   setCtx(MAIN);
 }
 
 /** which transition is running at t: a shot's `trans` is centred on its cut (half before, half after) */
 function transAt(t, i) {
   const S = OP._shots, nx = S[i + 1], cur = S[i];
-  if (nx?.trans) { const d = nx.trans.d ?? 0.28; if (t >= nx.at - d / 2) return { a: i, b: i + 1, tr: nx.trans, u: (t - (nx.at - d / 2)) / d }; }
-  if (i > 0 && cur.trans) { const d = cur.trans.d ?? 0.28; if (t < cur.at + d / 2) return { a: i - 1, b: i, tr: cur.trans, u: (t - (cur.at - d / 2)) / d }; }
+  if (nx?.trans) { const d = FLOW.dur(nx.trans); if (t >= nx.at - d / 2) return { a: i, b: i + 1, tr: nx.trans, u: (t - (nx.at - d / 2)) / d }; }
+  if (i > 0 && cur.trans) { const d = FLOW.dur(cur.trans); if (t < cur.at + d / 2) return { a: i - 1, b: i, tr: cur.trans, u: (t - (cur.at - d / 2)) / d }; }
   return null;
 }
 
@@ -42,7 +46,7 @@ function draw(t) {
   t = clamp(t, 0, T.dur - 1e-4);
   const S = OP._shots; let i = S.length - 1; while (i > 0 && S[i].at > t) i--;
   const sh = S[i], lt = t - sh.at, X = transAt(t, i);
-  if (X) { const A = layer('_a'), B = layer('_b'); paintShot(X.a, t, A.getContext('2d')); paintShot(X.b, t, B.getContext('2d')); composite(MAIN, A, B, X.tr, clamp(X.u)); }
+  if (X) { const A = layer('_a'), B = layer('_b'); paintShot(X.a, t, A.getContext('2d')); paintShot(X.b, t, B.getContext('2d')); (FLOW.isFlow(X.tr) ? FLOW.wipe : composite)(MAIN, A, B, X.tr, clamp(X.u)); }
   else paintShot(i, t, MAIN);
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.letterSpacing = '0px'; ctx.filter = 'none';
   if (i > 0 && !sh.trans && CUT_FLASH && lt < 0.12) { ctx.fillStyle = '#FFFFFF'; ctx.globalAlpha = CUT_FLASH * (1 - lt / 0.12); ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
@@ -61,7 +65,9 @@ function draw(t) {
     if (script.captions !== false) buildCaptions(script);
     const { shots, cues, kicks = [], flashes = [], leaks = [] } = buildShots();
     shots.sort((a, b) => a.at - b.at);
+    const flowReport = FLOW.enforce(shots, script);   // every cut becomes a world hand-off unless script.motion === 'classic'
     OP._shots = shots; OP.script = script; OP._kicks = kicks; OP._flashes = flashes; OP._leaks = leaks;
+    OP.flow = () => flowReport;
     OP.duration = () => T.dur;
     OP.draw = draw;
     OP.frame = (t, q = 0.92) => { draw(t); return cv.toDataURL('image/jpeg', q); };

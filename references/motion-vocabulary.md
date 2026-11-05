@@ -1,12 +1,17 @@
 # Motion vocabulary: transitions, camera kicks, kinetic type, numbers
 
+> **Scene changes are flow hand-offs: see [flow-motion.md](flow-motion.md).** That covers `carry`, `portal`, `smoke`,
+> `pass` and `dive`, plus camera paths and time of day. The cut-transition table in §1 below (whip, glitch, flash,
+> iris, zoom, slide) is **classic mode only** (`"motion": "classic"`, used when the user asks). Everything else in
+> this file (kicks, impact flashes, leaks, kinetic type, counters) is still used *inside* shots.
+
 Shorts feel premium when every beat has a designed move. This file is the toolbox, distilled from the kinetic-type,
 data and illustrated motion-graphics libraries. Choose the move that fits the line and the emotion, never decoration.
 
 ## 1. The 2D engine (Inside Out, Stick Story, Paper Atlas): `src/core/motion.js`
 Everything below is opt-in. A project that doesn't use it renders exactly as before (verified pixel-identical).
 
-### Cut transitions: `trans` on a shot
+### Classic cut transitions (`"motion": "classic"` only): `trans` on a shot
 ```js
 add({ id: 'S04', at: cut(3), trans: { type: 'whip', dir: 1, d: 0.28 }, cam: [540, 800], draw(lt) { … } });
 cue(cut(3) - 0.14, 'whoosh');                    // the transition is centred on the cut: half before, half after

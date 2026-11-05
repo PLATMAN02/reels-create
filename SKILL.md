@@ -1,6 +1,6 @@
 ---
 name: faceless-shorts
-description: Create code-rendered faceless shorts and animated cartoon stories with six visual styles, local AI narration or a supplied voiceover, music and sound effects, built for retention (hook on frame 0, re-hooks every 5 s, motion-graphics transitions, follow call to action) and self-audited before delivery. Use for narrated Shorts, TikToks, Reels, what-if or what-happens-if explainers, Zack D. Films-style 3D explainers, money and data explainers, mystery or true-crime shorts, stick-figure survival stories, history shorts, funny true stories, voiceover-driven cartoon videos, and chapter-based long-form versions of these styles, even from just a topic.
+description: Create code-rendered faceless shorts and animated cartoon stories with six visual styles, local AI narration or a supplied voiceover, music and sound effects, built for retention (hook on frame 0, re-hooks every 5 s, flow-motion camera that follows the action from scene to scene with no hard cuts, follow call to action) and self-audited before delivery. Use for narrated Shorts, TikToks, Reels, what-if or what-happens-if explainers, Zack D. Films-style 3D explainers, money and data explainers, mystery or true-crime shorts, stick-figure survival stories, history shorts, funny true stories, voiceover-driven cartoon videos, and chapter-based long-form versions of these styles, even from just a topic.
 ---
 
 # Faceless Shorts
@@ -22,10 +22,18 @@ frame and every transition, a planned emotion per shot, and a follow call to act
 fix (log it, re-render the full sheet, compare with the previous one, re-check neighbours and shared components), zero
 unintended overlap (text, faces, captions, frame edges and the phone safe zone, checked at maximum zoom), and an
 animation quality bar (a signature move per shot, real animation principles, no linear tweens, no slideshow feel).
-**The motion toolbox is [references/motion-vocabulary.md](references/motion-vocabulary.md):** designed cut transitions
-(whip, glitch, flash, iris, zoom-through, slide), camera kicks, flashes and light leaks, kinetic type (slams, highlighter
-swipes, strikes, hand-drawn circles and arrows), rolling counters, and recipes for each signature move. In the 2D styles
-these are built into `src/core/motion.js`.
+**Flow motion is the only motion style, in all six styles: read [references/flow-motion.md](references/flow-motion.md)
+before planning shots.** The camera never cuts. It follows the thing that moves (a thrown coin, a fired ball, a walking
+character) from one place into the next. When a scene must change, the world hides it with a hand-off (`trans`):
+`carry`, `portal` (fly through a door, window, screen or hole), `smoke` (smoke, dust, foam), `pass` (something close to
+the lens sweeps across) or `dive` (dolly forward through the shot). The camera eases out onto a reacting face, and the
+light moves day → sunset → night with the story (`tod`). There are no glitch, flash or iris overlays.
+`capture.mjs check` replaces any hard cut with an automatic hand-off and lists it, so design a real one for each.
+Only `"motion": "classic"` in `script.json`, used when the user asks, restores the old transitions.
+Hand-offs and paths live in `src/core/flow.js` (all styles) and `src/core/flow3d.js` (3D camera paths and chase cameras).
+**The in-shot motion toolbox is [references/motion-vocabulary.md](references/motion-vocabulary.md):** camera kicks,
+impact flashes and light leaks, kinetic type (slams, highlighter swipes, strikes, hand-drawn circles and arrows), rolling
+counters, and recipes for each signature move (`src/core/motion.js` in the 2D styles).
 
 **Claude Code notes.**
 - Look at images with the **Read** tool (it displays PNG/JPG). Every "look at the sheet / key frame" step below means
@@ -86,7 +94,7 @@ use it and ask for the final transcript only if alignment cannot otherwise be re
 ## 2. The plan (ONE screen, then wait)
 Show: title · **the hook** (frame-0 image plus the first line) · the full narration, one line per cut, with its caption
 chunks (`WHAT IF *YOU | SWALLOW *GUM?`) · the shot list, one line each (what we see, what moves, which word it lands on,
-the transition into it, **its emotion**, **its signature move**) · **the re-hook timeline** (each re-hook's estimated time and type; longest gap ≤ 5 s)
+**the camera hand-off into it** (what carries the camera there: `carry`/`portal`/`smoke`/`pass`/`dive`, and its cause in the story), **its emotion**, **its signature move**) · **the re-hook timeline** (each re-hook's estimated time and type; longest gap ≤ 5 s)
 · **the ending** (payoff line, spoken follow CTA, follow card) · new components you'll add to the kit, if any · facts and
 their sources. Ask **"Build it?"** and wait.
 
@@ -124,12 +132,13 @@ reliable source (list them in `script.json` "sources"). Health topics: accurate,
 3. Timing: `SKILL/scripts/py SKILL/scripts/voice.py <proj>` then `SKILL/scripts/py SKILL/scripts/words.py <proj>`
    (own recording: `words.py <proj> --audio their.m4a`; captions-only: `estimate.py <proj>`).
 4. Rewrite `src/shots.js`: one shot per line (or two for long lines), each placed with `cut(i)` and its key moments on
-   words with `Wd('word', line)`. Every shot opens already moving and gets a designed transition (match cut, whip,
-   zoom-through or the style's punch-in), layered motion and its emotion shown on a face, in colour and in sound. The last shot
-   is an animated follow card. In the 2D styles give cuts a `trans` (whip, glitch, flash, iris, zoom, slide; never the same
-   type twice in a row), return `kicks`/`flashes`/`leaks` for the big words, and use the `FX` helpers from
-   `src/core/motion.js` (references/motion-vocabulary.md). Reuse the selected style's engine modules (`src/core/kit.js` for 2D, or its 3D world/character modules); add components in that style's look.
-5. In the project: `node tools/capture.mjs check` (must say CHECK OK) → `node tools/capture.mjs cues` →
+   words with `Wd('word', line)`. Every shot opens already moving and enters through a designed **flow hand-off** (`trans`: `carry`, `portal`, `smoke`,
+   `pass`, `dive`, with a cause in the story, never the same type twice in a row; references/flow-motion.md). It has a
+   camera that keeps travelling (`camPath` in 2D, `pathCam`/`followCam` in 3D), layered motion, and its emotion shown on a
+   face, in colour and in sound. The last shot is an animated follow card, or a loop ending if the user chose one.
+   Return `kicks`/`flashes`/`leaks` for the big words (2D) and use the `FX` helpers from `src/core/motion.js`
+   (references/motion-vocabulary.md). Reuse the selected style's engine modules (`src/core/kit.js` for 2D, or its 3D world/character modules); add components in that style's look.
+5. In the project: `node tools/capture.mjs check` (must say CHECK OK, and `flow motion: every cut is a designed hand-off`) → `node tools/capture.mjs cues` →
    `SKILL/scripts/py tools/mix.py .` → QA (section 4) → `node tools/capture.mjs video renders/<name>.mp4`.
    Iterating on one shot: `node tools/capture.mjs frames review/f "4.2,4.6"` and look.
 
@@ -143,6 +152,8 @@ frames full size. For every frame ask:
 - **Is anything colliding?** Run the zero-overlap audit (references/audit.md §2) on every shot: text vs text, labels vs
   what they describe, anything vs the caption zone, faces, particles, frame edges and the phone safe zone (x 60-940,
   y 180-1520; captions keep the style's caption box) at maximum punch-in, and the whole path of every moving object. Paper Atlas and Tall Tale use different caption zones.
+- **Does it flow?** (references/flow-motion.md §5) Render 3 frames through every hand-off and read them. The camera
+  should carry through, nothing important should be hidden under smoke or a passing object, and no type should repeat on consecutive cuts.
 - **Is it cool?** Apply the animation bar (references/audit.md §3): name each shot's signature move, and check for
   anticipation, follow-through, staggered entrances, eased timing and parallax. A shot that only fades or pops things in isn't done.
 - **Captions:** follow the selected STYLE.md (Paper Atlas uses crimson on paper; Tall Tale uses unhighlighted words). If `"captions": false`, no captions should render. Check spelling, timing and phone readability.

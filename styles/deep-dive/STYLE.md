@@ -56,3 +56,11 @@ without one (or a cloud sandbox) render with `SOFTWARE_GL=1 QS='&res=0.6&aa=0&sh
 - Seat backs / props between camera and subject: keep the camera in clear space (centre of an aisle).
 - Overlays on faces: check every frame where a pill or warning appears.
 - The x-ray body must be x-ray everywhere except the head (`setBodyMaterial`).
+
+
+## Flow motion (mandatory: references/flow-motion.md)
+The camera never cuts. Every scene change is a hand-off in `shot.trans` (`carry` · `portal` · `smoke` · `pass` · `dive`,
+from `src/core/flow.js`), caused by something in the story and never the same type twice in a row. Inside a shot the
+camera keeps travelling with `pathCam(cam, pts, looks, k, { ease })` / `followCam(cam, pos, vel)` / `ballistic(a, b, h, k)` from `src/core/flow3d.js`. Let the light follow the story with `tod` (0 = midday, 0.5 = sunset, 1 = night).
+`capture.mjs check` must print `flow motion: every cut is a designed hand-off`.
+Good hand-offs in this style: flying in through the mouth, nose or skin and riding blood cells along the vessel (`followCam` + `pathCam`), pushing through an organ wall (`portal`), dust or vapour over the lens.

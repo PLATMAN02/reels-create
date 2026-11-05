@@ -11,3 +11,5 @@
 9. S05: items repositioned/resized into the safe zone; red scribble (crossed the shirt) replaced by dust puffs on each landing + an "= CASH" pill. Cue changed to a pop.
 10. S06: coin burst radius reduced so coins stay inside the frame safe zone.
 11. S14: hand arrow (cut through disclaimer) replaced by pulsing gold rings around the FOLLOW button; disclaimer refit to 620 px wide.
+12. Flow motion: every cut is now a world hand-off (portal into phone/laptop/door, dust and soap smoke, hedge and post passes, coin carries, dive into tile 1); camera paths on S04 and S13; light warms to sunset across S12-S14. Touches every cut and S04, S12-S14.
+13. flow.js: dive blows the old shot past the lens faster (no double image); carry blur reduced (vertical smear). S14: card already popped while the portal opens onto it.

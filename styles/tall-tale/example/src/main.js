@@ -5,20 +5,38 @@ import { W, H, setCtx, ctx, clamp } from './core/lib.js';
 import { T, loadTiming } from './core/timing.js';
 import { buildCaptions, drawCaption, captionList } from './core/captions.js';
 import { makeEngine, RES, AA } from './core/engine.js';
+import * as FLOW from './core/flow.js';
 import { buildShots } from './shots.js';
 
 const cv = document.getElementById('cv'), GL = document.getElementById('gl');
-setCtx(cv.getContext('2d'));
+const MAIN = cv.getContext('2d'); setCtx(MAIN);
 const OP = (window.OP = { ready: false });
+
+/** paint shot i at film time t into context c (the shot renders its 3D frame, blits it, adds its 2D layer). Pure. */
+function paint(i, t, c) {
+  const S = OP._shots, sh = S[i], end = i < S.length - 1 ? S[i + 1].at : T.dur, d = end - sh.at, lt = t - sh.at;
+  setCtx(c); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.letterSpacing = '0px'; c.filter = 'none'; c.globalCompositeOperation = 'source-over';
+  if (c !== MAIN) { c.fillStyle = '#000'; c.fillRect(0, 0, W, H); }
+  const blit = () => ctx.drawImage(GL, 0, 0, W, H);
+  c.save(); sh.draw(lt, d, t, blit); c.restore();
+  if (sh.tod != null) FLOW.grade(c, typeof sh.tod === 'function' ? sh.tod(lt, d) : sh.tod);   // day → sunset → night
+  setCtx(MAIN);
+}
+/** which flow hand-off is running at t: a shot's `trans` is centred on its cut (half before, half after) */
+function transAt(t, i) {
+  const S = OP._shots, nx = S[i + 1], cur = S[i];
+  if (nx?.trans) { const d = FLOW.dur(nx.trans); if (t >= nx.at - d / 2) return { a: i, b: i + 1, tr: nx.trans, u: (t - (nx.at - d / 2)) / d }; }
+  if (i > 0 && cur.trans) { const d = FLOW.dur(cur.trans); if (t < cur.at + d / 2) return { a: i - 1, b: i, tr: cur.trans, u: (t - (cur.at - d / 2)) / d }; }
+  return null;
+}
 
 function draw(t) {
   t = clamp(t, 0, T.dur - 1e-4);
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.letterSpacing = '0px';
   const S = OP._shots; let i = S.length - 1; while (i > 0 && S[i].at > t) i--;
-  const sh = S[i], end = i < S.length - 1 ? S[i + 1].at : T.dur, d = end - sh.at, lt = t - sh.at;
-  const blit = () => ctx.drawImage(GL, 0, 0, W, H);
-  ctx.save(); sh.draw(lt, d, t, blit); ctx.restore();
-  ctx.globalAlpha = 1; ctx.letterSpacing = '0px';
+  const X = transAt(t, i);
+  if (X) { const A = FLOW.layer('_a'), B = FLOW.layer('_b'); paint(X.a, t, A.getContext('2d')); paint(X.b, t, B.getContext('2d')); FLOW.wipe(MAIN, A, B, X.tr, clamp(X.u)); }
+  else paint(i, t, MAIN);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.letterSpacing = '0px';
   const fade = OP.script?.fade === false ? 1 : Math.min(clamp(t / 0.25), clamp((T.dur - t) / 0.4));
   if (fade < 1) { ctx.fillStyle = '#000'; ctx.globalAlpha = 1 - fade; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
   if (OP.script?.captions !== false) drawCaption(t);
@@ -34,7 +52,9 @@ function draw(t) {
     const E = makeEngine(GL, { w: GL.width, h: GL.height, samples: AA });
     const { shots, cues } = buildShots(E);
     shots.sort((a, b) => a.at - b.at);
+    const flowReport = FLOW.enforce(shots, script);   // every cut becomes a world hand-off unless script.motion === 'classic'
     OP._shots = shots; OP.script = script;
+    OP.flow = () => flowReport;
     OP.duration = () => T.dur;
     OP.draw = draw;
     OP.frame = (t, q = 0.92) => { draw(t); return cv.toDataURL('image/jpeg', q); };

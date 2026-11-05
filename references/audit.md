@@ -73,6 +73,7 @@ Each shot needs:
 - **Variety:** don't use the same signature move in two consecutive shots, and give each shot a different entrance
   style from the one before it.
 - **Banned:** a static layout with things merely fading in, everything popping in on the same frame, a slideshow feel,
+  hard cuts and overlay transitions between scenes (glitch, white flash, iris: use a flow hand-off, references/flow-motion.md),
   and motion that has no reason (shaking or spinning that doesn't match the line or the emotion).
 In the plan, write each shot's signature move next to its emotion (`S02 · shock · chart line dives, -30% slams + shake`).
 In QA, name the signature move you saw in each shot. A shot without one is not done.

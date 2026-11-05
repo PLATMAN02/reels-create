@@ -34,3 +34,11 @@ UNSOLVED stamp. End on silence and the drone.
 - Camera inside a light cone = flat brown frame. Seats or walls between camera and subject = blocked view.
 - Too-tight framing on a dark doorway reads as an empty frame: use a wider lens (`fov: 58`) for dark spaces.
 - Rendering speed: see Deep Dive STYLE.md section 5.
+
+
+## Flow motion (mandatory: references/flow-motion.md)
+The camera never cuts. Every scene change is a hand-off in `shot.trans` (`carry` · `portal` · `smoke` · `pass` · `dive`,
+from `src/core/flow.js`), caused by something in the story and never the same type twice in a row. Inside a shot the
+camera keeps travelling with `pathCam(cam, pts, looks, k, { ease })` / `followCam(cam, pos, vel)` / `ballistic(a, b, h, k)` from `src/core/flow3d.js`. Let the light follow the story with `tod` (0 = midday, 0.5 = sunset, 1 = night).
+`capture.mjs check` must print `flow motion: every cut is a designed hand-off`.
+Good hand-offs in this style: the torch beam leading the camera, through the window or door of the case location (`portal`), fog or rain over the lens (`smoke` with a dark `col`), a passing pillar in the dark (`pass`).
